@@ -1,41 +1,37 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React from 'react'
 import Head from 'next/head'
-import { Button } from '@nextui-org/react';
+import { Tab, Tabs } from '@nextui-org/react';
+import HomeTab from '../components/HomeTab';
+import SettingsTab from '../components/SettingsTab';
+import { RiHome2Fill, RiSettings2Fill } from 'react-icons/ri';
 
 export default function HomePage() {
-  const [showSticky, setShowSticky] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const isFirstRender = useRef<boolean>(true)
-
-  useEffect(() => {
-    window.ipc.on('sticky:isRendering', (arg: boolean) => {
-      setIsLoading(arg)
-    })
-  }, [])
-
-  useEffect(() => {
-    if (!isFirstRender.current) {
-      window.ipc.send('system:showSticky', showSticky);
-    } else {
-      isFirstRender.current = false
-    }
-  }, [showSticky])
-
-  const runInSystemTray = () => {
-    window.ipc.send('system:runInSystemTray', true);
-  }
 
   return (
     <React.Fragment>
       <Head>
-        <title>Home - Nextron (with-tailwindcss)</title>
+        <title>Học thuộc lòng</title>
       </Head>
       <div className="grid grid-col-1 text-2xl text-center">
-        <Button color="success" onClick={runInSystemTray}>Run In System Tray</Button>
-        <Button color="primary" onClick={() => setShowSticky(!showSticky)} isLoading={isLoading}>
-          {showSticky ? 'Hide Sticky' : 'Show Sticky'}
-        </Button>
+        <Tabs aria-label="Options" color="primary" variant="solid">
+          <Tab key="home" title={
+            <div className="flex items-center space-x-2">
+              <RiHome2Fill />
+              <span>Màn hình chính</span>
+            </div>
+          }>
+            <HomeTab />
+          </Tab>
+          <Tab key="settings" title={
+            <div className="flex items-center space-x-2">
+              <RiSettings2Fill />
+              <span>Cài đặt</span>
+            </div>
+          }>
+            <SettingsTab />
+          </Tab>
+        </Tabs>
       </div>
     </React.Fragment>
   )
