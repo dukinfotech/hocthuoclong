@@ -2,6 +2,7 @@ import { Button } from "@nextui-org/react";
 import { useState } from "react";
 import { BsDatabaseAdd } from "react-icons/bs";
 import Prompt from "../Prompt";
+import { toast } from "react-toastify";
 
 interface CreateDBButtonProps {
   databases: IDBDatabaseInfo[];
@@ -25,6 +26,7 @@ export default function CreateDBButton({
     const request = window.indexedDB.open(dbName);
 
     request.onsuccess = (e) => {
+      toast.success("Đã tạo thành công!");
       onSuccess();
       handleClose();
     };
