@@ -7,6 +7,8 @@ const mainConfig = new Store<MainConfigType>({
       isRunInSystemTray: false
     },
     stickyWindow: {
+      width: 300,
+      height: 28,
       isShow: false
     }
   }

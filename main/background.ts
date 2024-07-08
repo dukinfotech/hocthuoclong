@@ -2,6 +2,7 @@ import path from "path";
 import { app, BrowserWindow, ipcMain, screen } from "electron";
 import serve from "electron-serve";
 import { createWindow, runInSystemTray } from "./helpers";
+import { mainConfig } from "./configs";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -50,8 +51,8 @@ ipcMain.on("mainConfig.mainWindow.isRunInSystemTray", async (event, arg) => {
 ipcMain.handle("mainConfig.stickyWindow.isShow", async (event, arg) => {
   if (arg) {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-    const windowWith = 300;
-    const windowHeight = 28;
+    const windowWith = mainConfig.get('stickyWindow.width') as number;
+    const windowHeight = mainConfig.get('stickyWindow.height') as number;
 
     stickyWindow = createWindow("sticky", {
       width: windowWith,

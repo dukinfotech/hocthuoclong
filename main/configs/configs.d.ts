@@ -6,6 +6,8 @@ declare global {
       isRunInSystemTray: boolean
     },
     stickyWindow: {
+      width: number,
+      height: number,
       isShow: boolean
     }
   }
