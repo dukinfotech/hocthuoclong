@@ -8,21 +8,21 @@ export default function HomeTab() {
   const isFirstRender = useRef<boolean>(true)
 
   useEffect(() => {
-    window.ipc.on('sticky:isRendering', (arg: boolean) => {
+    window.ipc.on('mainConfig.stickyWindow.isRendering', (arg: boolean) => {
       setIsLoading(arg)
     })
   }, [])
 
   useEffect(() => {
     if (!isFirstRender.current) {
-      window.ipc.send('system:showSticky', showSticky);
+      window.ipc.send('mainConfig.stickyWindow.isShow', showSticky);
     } else {
       isFirstRender.current = false
     }
   }, [showSticky])
 
   const runInSystemTray = () => {
-    window.ipc.send('system:runInSystemTray', true);
+    window.ipc.send('mainConfig.mainWindow.isRunInSystemTray', true);
   }
 
   return (

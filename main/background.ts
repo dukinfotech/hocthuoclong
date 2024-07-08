@@ -14,7 +14,6 @@ if (isProd) {
 let mainWindow: BrowserWindow;
 let stickyWindow: BrowserWindow;
 
-
 (async () => {
   await app.whenReady()
 
@@ -41,16 +40,16 @@ app.on('window-all-closed', () => {
   app.quit()
 })
 
-ipcMain.on('system:runInSystemTray', async (event, arg) => {
+ipcMain.on('mainConfig.mainWindow.isRunInSystemTray', async (event, arg) => {
   mainWindow.hide()
   runInSystemTray(() => {
     mainWindow.show()
   })
 })
 
-ipcMain.on('system:showSticky', async (event, arg) => {
+ipcMain.on('mainConfig.stickyWindow.isShow', async (event, arg) => {
   if (arg) {
-    event.sender.send('sticky:isRendering', true)
+    event.sender.send('mainConfig.stickyWindow:isRendering', true)
 
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const windowWith = 300
@@ -81,7 +80,7 @@ ipcMain.on('system:showSticky', async (event, arg) => {
       await stickyWindow.loadURL(`http://localhost:${port}/sticky`)
     }
 
-    event.sender.send('sticky:isRendering', false)
+    event.sender.send('mainConfig.stickyWindow:isRendering', false)
   } else {
     stickyWindow.close();
   }
