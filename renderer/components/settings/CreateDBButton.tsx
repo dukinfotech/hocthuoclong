@@ -22,11 +22,11 @@ export default function CreateDBButton({
       return;
     }
 
-    setIsShowPrompt(false);
     const request = window.indexedDB.open(dbName);
 
     request.onsuccess = (e) => {
       onSuccess();
+      handleClose();
     };
   };
 
@@ -51,6 +51,8 @@ export default function CreateDBButton({
       {isShowPrompt && (
         <Prompt
           label="Nhập tên bộ dữ liệu"
+          isRequired
+          isClearable
           isInvalid={Boolean(errorMessage)}
           errorMessage={errorMessage}
           onPressOK={handleCreateDb}

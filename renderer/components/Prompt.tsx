@@ -17,6 +17,12 @@ interface PromptProps extends InputProps {
 export default function Prompt({ onPressOK, onClose, ...rest }: PromptProps) {
   const [value, setValue] = useState<any>();
 
+  const handleClickOK = () => {
+    if (value) {
+      onPressOK(value);
+    }
+  };
+
   return (
     <Modal
       size="sm"
@@ -36,7 +42,7 @@ export default function Prompt({ onPressOK, onClose, ...rest }: PromptProps) {
           />
         </ModalBody>
         <ModalFooter>
-          <Button size="sm" color="primary" onPress={() => onPressOK(value)}>
+          <Button size="sm" color="primary" onPress={handleClickOK}>
             Xác nhận
           </Button>
           <Button size="sm" color="danger" variant="light" onPress={onClose}>
