@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
 
 const handler = {
-  send(channel: string, value: unknown) {
+  send(channel: string, value?: unknown) {
     ipcRenderer.send(channel, value)
   },
   on(channel: string, callback: (...args: unknown[]) => void) {
@@ -13,7 +13,7 @@ const handler = {
       ipcRenderer.removeListener(channel, subscription)
     }
   },
-  invoke(channel: string, value: unknown) {
+  invoke(channel: string, value?: unknown) {
     return ipcRenderer.invoke(channel, value)
   },
 }

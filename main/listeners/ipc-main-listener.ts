@@ -48,4 +48,11 @@ export default function ipcMainListener(
 
     return arg;
   });
+
+  ipcMain.handle("mainConfig.stickyWindow.reset", () => {
+    mainConfig.clear();
+    if (stickyWindow) {
+      stickyWindow.reload();
+    }
+  });
 }
