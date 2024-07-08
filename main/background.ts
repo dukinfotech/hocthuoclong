@@ -1,61 +1,59 @@
-import path from 'path'
-import { app, BrowserWindow, ipcMain, screen } from 'electron'
-import serve from 'electron-serve'
-import { createWindow, runInSystemTray } from './helpers'
+import path from "path";
+import { app, BrowserWindow, ipcMain, screen } from "electron";
+import serve from "electron-serve";
+import { createWindow, runInSystemTray } from "./helpers";
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === "production";
 
 if (isProd) {
-  serve({ directory: 'app' })
+  serve({ directory: "app" });
 } else {
-  app.setPath('userData', `${app.getPath('userData')} (development)`)
+  app.setPath("userData", `${app.getPath("userData")} (development)`);
 }
 
 let mainWindow: BrowserWindow;
 let stickyWindow: BrowserWindow;
 
 (async () => {
-  await app.whenReady()
+  await app.whenReady();
 
-  mainWindow = createWindow('main', {
+  mainWindow = createWindow("main", {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
     },
-  })
+  });
 
   if (isProd) {
-    await mainWindow.loadURL('app://./home')
+    await mainWindow.loadURL("app://./home");
   } else {
-    const port = process.argv[2]
-    await mainWindow.loadURL(`http://localhost:${port}/home`)
-    mainWindow.webContents.openDevTools()
+    const port = process.argv[2];
+    await mainWindow.loadURL(`http://localhost:${port}/home`);
+    mainWindow.webContents.openDevTools();
   }
 
-  mainWindow.on('close', app.quit);
-})()
+  mainWindow.on("close", app.quit);
+})();
 
-app.on('window-all-closed', () => {
-  app.quit()
-})
+app.on("window-all-closed", () => {
+  app.quit();
+});
 
-ipcMain.on('mainConfig.mainWindow.isRunInSystemTray', async (event, arg) => {
-  mainWindow.hide()
+ipcMain.on("mainConfig.mainWindow.isRunInSystemTray", async (event, arg) => {
+  mainWindow.hide();
   runInSystemTray(() => {
-    mainWindow.show()
-  })
-})
+    mainWindow.show();
+  });
+});
 
-ipcMain.on('mainConfig.stickyWindow.isShow', async (event, arg) => {
+ipcMain.handle("mainConfig.stickyWindow.isShow", async (event, arg) => {
   if (arg) {
-    event.sender.send('mainConfig.stickyWindow:isRendering', true)
-
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-    const windowWith = 300
-    const windowHeight = 28
+    const windowWith = 300;
+    const windowHeight = 28;
 
-    stickyWindow = createWindow('sticky', {
+    stickyWindow = createWindow("sticky", {
       width: windowWith,
       height: windowHeight,
       x: width - windowWith,
@@ -69,19 +67,19 @@ ipcMain.on('mainConfig.stickyWindow.isShow', async (event, arg) => {
       maximizable: false,
       resizable: false,
       webPreferences: {
-        preload: path.join(__dirname, 'preload.js'),
+        preload: path.join(__dirname, "preload.js"),
       },
-    })
+    });
 
     if (isProd) {
-      await stickyWindow.loadURL('app://./sticky')
+      await stickyWindow.loadURL("app://./sticky");
     } else {
-      const port = process.argv[2]
-      await stickyWindow.loadURL(`http://localhost:${port}/sticky`)
+      const port = process.argv[2];
+      await stickyWindow.loadURL(`http://localhost:${port}/sticky`);
     }
-
-    event.sender.send('mainConfig.stickyWindow:isRendering', false)
   } else {
     stickyWindow.close();
   }
-})
+
+  return arg;
+});

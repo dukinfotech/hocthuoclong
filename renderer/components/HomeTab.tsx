@@ -5,34 +5,37 @@ export default function HomeTab() {
   const [showSticky, setShowSticky] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const isFirstRender = useRef<boolean>(true)
-
-  useEffect(() => {
-    window.ipc.on('mainConfig.stickyWindow.isRendering', (arg: boolean) => {
-      setIsLoading(arg)
-    })
-  }, [])
+  const isFirstRender = useRef<boolean>(true);
 
   useEffect(() => {
     if (!isFirstRender.current) {
-      window.ipc.send('mainConfig.stickyWindow.isShow', showSticky);
+      setIsLoading(true);
+      window.ipc
+        .invoke("mainConfig.stickyWindow.isShow", showSticky)
+        .then(() => setIsLoading(false));
     } else {
-      isFirstRender.current = false
+      isFirstRender.current = false;
     }
-  }, [showSticky])
+  }, [showSticky]);
 
   const runInSystemTray = () => {
-    window.ipc.send('mainConfig.mainWindow.isRunInSystemTray', true);
-  }
+    window.ipc.send("mainConfig.mainWindow.isRunInSystemTray", true);
+  };
 
   return (
     <>
       <div>
-        <Button color="success" onClick={runInSystemTray}>Chạy ẩn dưới khay hệ thống</Button>
+        <Button color="success" onClick={runInSystemTray}>
+          Chạy ẩn dưới khay hệ thống
+        </Button>
       </div>
       <div>
-        <Button color="primary" onClick={() => setShowSticky(!showSticky)} isLoading={isLoading}>
-          {showSticky && !isLoading ? 'Ẩn Sticky' : 'Hiện Sticky'}
+        <Button
+          color="primary"
+          onClick={() => setShowSticky(!showSticky)}
+          isLoading={isLoading}
+        >
+          {showSticky && !isLoading ? "Ẩn Sticky" : "Hiện Sticky"}
         </Button>
       </div>
     </>
