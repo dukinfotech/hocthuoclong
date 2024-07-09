@@ -12,7 +12,6 @@ export default function CreateDBButton() {
       <Button
         size="lg"
         color="success"
-        variant="flat"
         isIconOnly
         title="Tạo bộ dữ liệu mới"
         onClick={() => setIsShowCreateDBModal(true)}

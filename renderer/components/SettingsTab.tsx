@@ -27,7 +27,6 @@ export default function SettingsTab() {
         <Button
           size="sm"
           color="danger"
-          variant="flat"
           isIconOnly
           title="Khôi phục mặc định"
           onClick={resetSettings}

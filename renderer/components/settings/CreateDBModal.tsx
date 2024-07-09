@@ -130,7 +130,7 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
           >
             Tạo bộ dữ liệu
           </Button>
-          <Button size="sm" color="danger" variant="light" onPress={onClose}>
+          <Button size="sm" color="danger" onPress={onClose}>
             Hủy
           </Button>
         </ModalFooter>
