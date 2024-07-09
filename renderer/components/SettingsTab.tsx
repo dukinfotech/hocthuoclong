@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { MdSettingsSuggest } from "react-icons/md";
 import CreateDBButton from "./settings/CreateDBButton";
 import { useConfirmPrompt } from "../providers/ConfirmPromptProvider";
+import { useSettingStore } from "../stores/setting-store";
 
 export const getListDB = async () => {
   const dbInfo = await window.indexedDB.databases();
@@ -11,6 +12,11 @@ export const getListDB = async () => {
 
 export default function SettingsTab() {
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
+  const selectedDB = useSettingStore((state) => state.selectedDB);
+  const [selectedDBKey, setSelectedDBKey] = useState(new Set([selectedDB]));
+  
+  const changeSelectedDB = useSettingStore((state) => state.changeSelectedDB);
+
   const { show } = useConfirmPrompt();
 
   const updateListDBSelect = () => {
@@ -22,6 +28,17 @@ export default function SettingsTab() {
   useEffect(() => {
     updateListDBSelect();
   }, []);
+
+  useEffect(() => {
+    const value = selectedDBKey.values();
+    const dbName = value.next().value;
+    
+    // Prevent update state on first render
+    if (dbName !== null) {
+      changeSelectedDB(dbName);
+    }
+
+  }, [selectedDBKey]);
 
   const resetSettings = async () => {
     const isConfirmed = await show("Bạn có muốn khôi phục mặc định?");
@@ -51,9 +68,13 @@ export default function SettingsTab() {
           color="primary"
           label="Bộ dữ liệu"
           className="max-w-xs"
+          selectedKeys={selectedDBKey}
+          onSelectionChange={(e: any) => setSelectedDBKey(e)}
         >
           {databases.map((db, i) => (
-            <SelectItem key={i}>{db.name}</SelectItem>
+            <SelectItem key={db.name} value={db.name}>
+              {db.name}
+            </SelectItem>
           ))}
         </Select>
         <Spacer x={1} />

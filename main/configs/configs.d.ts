@@ -1,10 +1,11 @@
-import { IpcHandler } from '../main/preload'
+import { IpcHandler } from "../main/preload";
 
 declare global {
   interface MainConfigType {
+    selectedDB: string;
     stickyWindow: {
-      width: number,
-      height: number
-    }
+      width: number;
+      height: number;
+    };
   }
 }

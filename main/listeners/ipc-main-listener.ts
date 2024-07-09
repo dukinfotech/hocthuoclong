@@ -55,4 +55,8 @@ export default function ipcMainListener(
       stickyWindow.reload();
     }
   });
+
+  ipcMain.on("mainConfig.selectedDB", (e, selectedDB) => {
+    mainConfig.set("selectedDB", selectedDB)
+  });
 }
