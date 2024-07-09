@@ -1,4 +1,4 @@
-import { Button } from "@nextui-org/react";
+import { Button, Code, Spacer } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
 
@@ -26,13 +26,17 @@ export default function HomeTab() {
 
   return (
     <>
-      <div>
-        {selectedDB}
+      <Code>Bộ dữ liệu đang chọn: {selectedDB}</Code>
+
+      <Spacer y={1} />
+
+      <div className="flex justify-center">
         <Button color="success" onClick={runInSystemTray}>
           Chạy ẩn dưới khay hệ thống
         </Button>
-      </div>
-      <div>
+
+        <Spacer x={1} />
+
         <Button
           color="primary"
           onClick={() => setShowSticky(!showSticky)}

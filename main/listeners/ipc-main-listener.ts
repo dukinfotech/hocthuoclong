@@ -8,6 +8,11 @@ export default function ipcMainListener(
   mainWindow: BrowserWindow,
   stickyWindow: BrowserWindow
 ) {
+  ipcMain.handle("window-ready", async (event, arg) => {
+    // Load user's settings from disk to global state
+    mainWindow.webContents.send("setting.load", settings.store);
+  })
+
   ipcMain.on("mainWindow.isRunInSystemTray", async () => {
     runInSystemTray(mainWindow);
   });
