@@ -11,10 +11,14 @@ export const getListDB = async () => {
 export default function SettingsTab() {
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
 
-  useEffect(() => {
-    getListDB().then(dbInfo => {
+  const updateListDBSelect = () => {
+    getListDB().then((dbInfo) => {
       setDatabases(dbInfo);
     });
+  };
+
+  useEffect(() => {
+    updateListDBSelect();
   }, []);
 
   const resetSettings = () => {
@@ -37,13 +41,18 @@ export default function SettingsTab() {
 
       <Spacer y={2} />
       <div className="flex justify-center">
-        <Select size="sm" color="primary" label="Bộ dữ liệu" className="max-w-xs">
+        <Select
+          size="sm"
+          color="primary"
+          label="Bộ dữ liệu"
+          className="max-w-xs"
+        >
           {databases.map((db, i) => (
             <SelectItem key={i}>{db.name}</SelectItem>
           ))}
         </Select>
         <Spacer x={1} />
-        <CreateDBButton />
+        <CreateDBButton onClose={updateListDBSelect} />
       </div>
     </>
   );

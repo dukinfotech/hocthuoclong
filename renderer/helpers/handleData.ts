@@ -3,7 +3,7 @@ import * as Excel from "exceljs";
 
 const loadDataToDB = (dataSet: DataSetType) => {
   return new Promise(async (resolve, reject) => {
-    const request = window.indexedDB.open(dataSet.name, 1);
+    const request = window.indexedDB.open(dataSet.name);
 
     // Define field name
     const fields = [];
@@ -12,30 +12,38 @@ const loadDataToDB = (dataSet: DataSetType) => {
       fields.push(field);
     }
 
-    // Get data from excel file
-    const data = await readExcelFile(dataSet, fields);
-
     // Invoked when database version (database schema) is changed
     request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-      console.log("onupgradeneeded")
+      console.log("onupgradeneeded");
       const db: IDBDatabase = (event.target as IDBOpenDBRequest).result;
 
       // Create an objectStore for this database
       const objectStore = db.createObjectStore("data", { keyPath: "id" });
 
       // Index fields
-      fields.forEach(field => {
+      fields.forEach((field) => {
         objectStore.createIndex(field, field, { unique: false });
       });
     };
 
-    request.onsuccess = function (event: any) {
-      console.log("onsuccess")
+    request.onsuccess = async function (event: any) {
+      console.log("onsuccess");
+      // Get data from excel file
+      const data = await readExcelFile(dataSet, fields);
+
       const db: IDBDatabase = (event.target as IDBOpenDBRequest).result;
+      const transaction = db.transaction("data", "readwrite");
+      const objectStore = transaction.objectStore("data");
+
+      data.forEach((dataObject) => {
+        objectStore.add(dataObject);
+      });
+
+      resolve(true);
     };
 
     request.onerror = function (event: any) {
-      console.log("onerror")
+      console.log("onerror");
       reject(event.target.error);
     };
   });

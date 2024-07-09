@@ -3,9 +3,18 @@ import { useState } from "react";
 import { BsDatabaseAdd } from "react-icons/bs";
 import CreateDBModal from "./CreateDBModal";
 
-export default function CreateDBButton() {
+interface CreateDBButtonProps {
+  onClose: () => void;
+}
+
+export default function CreateDBButton({ onClose }: CreateDBButtonProps) {
   const [isShowCreateDBModal, setIsShowCreateDBModal] =
     useState<boolean>(false);
+
+  const handleClose = () => {
+    setIsShowCreateDBModal(false);
+    onClose();
+  };
 
   return (
     <>
@@ -19,9 +28,7 @@ export default function CreateDBButton() {
         <BsDatabaseAdd />
       </Button>
 
-      {isShowCreateDBModal && (
-        <CreateDBModal onClose={() => setIsShowCreateDBModal(false)} />
-      )}
+      {isShowCreateDBModal && <CreateDBModal onClose={handleClose} />}
     </>
   );
 }
