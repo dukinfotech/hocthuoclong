@@ -8,11 +8,11 @@ export default function ipcMainListener(
   mainWindow: BrowserWindow,
   stickyWindow: BrowserWindow
 ) {
-  ipcMain.on("settings.mainWindow.isRunInSystemTray", async () => {
+  ipcMain.on("mainWindow.isRunInSystemTray", async () => {
     runInSystemTray(mainWindow);
   });
 
-  ipcMain.handle("settings.stickyWindow.isShow", async (event, arg) => {
+  ipcMain.handle("stickyWindow.isShow", async (event, arg) => {
     if (arg) {
       const { width, height } = screen.getPrimaryDisplay().workAreaSize;
       const windowWith = settings.get("stickyWindow.width") as number;
@@ -49,7 +49,7 @@ export default function ipcMainListener(
     return arg;
   });
 
-  ipcMain.handle("settings.stickyWindow.reset", () => {
+  ipcMain.handle("stickyWindow.reset", () => {
     settings.clear();
     if (stickyWindow) {
       stickyWindow.reload();
