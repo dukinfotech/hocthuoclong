@@ -2,6 +2,7 @@ import { Button, Select, SelectItem, Spacer } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { MdSettingsSuggest } from "react-icons/md";
 import CreateDBButton from "./settings/CreateDBButton";
+import { useConfirmPrompt } from "../providers/ConfirmPromptProvider";
 
 export const getListDB = async () => {
   const dbInfo = await window.indexedDB.databases();
@@ -10,6 +11,7 @@ export const getListDB = async () => {
 
 export default function SettingsTab() {
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
+  const { show } = useConfirmPrompt();
 
   const updateListDBSelect = () => {
     getListDB().then((dbInfo) => {
@@ -21,8 +23,11 @@ export default function SettingsTab() {
     updateListDBSelect();
   }, []);
 
-  const resetSettings = () => {
-    window.ipc.invoke("mainConfig.stickyWindow.reset");
+  const resetSettings = async () => {
+    const isConfirmed = await show("Bạn có muốn khôi phục mặc định?");
+    if (isConfirmed) {
+      window.ipc.invoke("mainConfig.stickyWindow.reset");
+    }
   };
 
   return (
