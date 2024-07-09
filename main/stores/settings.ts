@@ -1,7 +1,7 @@
 import Store from "electron-store";
 
-const mainConfig = new Store<MainConfigType>({
-  name: "main",
+const settings = new Store<SettingType>({
+  name: "settings",
   defaults: {
     selectedDB: null,
     stickyWindow: {
@@ -12,4 +12,4 @@ const mainConfig = new Store<MainConfigType>({
   watch: true,
 });
 
-export { mainConfig };
+export { settings };

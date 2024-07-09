@@ -13,7 +13,7 @@ export default function HomeTab() {
     if (!isFirstRender.current) {
       setIsLoading(true);
       window.ipc
-        .invoke("mainConfig.stickyWindow.isShow", showSticky)
+        .invoke("settings.stickyWindow.isShow", showSticky)
         .then(() => setIsLoading(false));
     } else {
       isFirstRender.current = false;
@@ -21,7 +21,7 @@ export default function HomeTab() {
   }, [showSticky]);
 
   const runInSystemTray = () => {
-    window.ipc.send("mainConfig.mainWindow.isRunInSystemTray", true);
+    window.ipc.send("settings.mainWindow.isRunInSystemTray", true);
   };
 
   return (

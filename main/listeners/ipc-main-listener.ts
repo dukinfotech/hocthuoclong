@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain, screen } from "electron";
 import { createWindow, runInSystemTray } from "../helpers";
-import { mainConfig } from "../configs";
+import { settings } from "../stores/settings";
 import path from "path";
 import { isProd } from "../background";
 
@@ -8,15 +8,15 @@ export default function ipcMainListener(
   mainWindow: BrowserWindow,
   stickyWindow: BrowserWindow
 ) {
-  ipcMain.on("mainConfig.mainWindow.isRunInSystemTray", async () => {
+  ipcMain.on("settings.mainWindow.isRunInSystemTray", async () => {
     runInSystemTray(mainWindow);
   });
 
-  ipcMain.handle("mainConfig.stickyWindow.isShow", async (event, arg) => {
+  ipcMain.handle("settings.stickyWindow.isShow", async (event, arg) => {
     if (arg) {
       const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-      const windowWith = mainConfig.get("stickyWindow.width") as number;
-      const windowHeight = mainConfig.get("stickyWindow.height") as number;
+      const windowWith = settings.get("stickyWindow.width") as number;
+      const windowHeight = settings.get("stickyWindow.height") as number;
 
       stickyWindow = createWindow("sticky", {
         width: windowWith,
@@ -49,14 +49,14 @@ export default function ipcMainListener(
     return arg;
   });
 
-  ipcMain.handle("mainConfig.stickyWindow.reset", () => {
-    mainConfig.clear();
+  ipcMain.handle("settings.stickyWindow.reset", () => {
+    settings.clear();
     if (stickyWindow) {
       stickyWindow.reload();
     }
   });
 
-  ipcMain.on("mainConfig.selectedDB", (e, selectedDB) => {
-    mainConfig.set("selectedDB", selectedDB)
+  ipcMain.on("settings.selectedDB", (e, selectedDB) => {
+    settings.set("selectedDB", selectedDB)
   });
 }

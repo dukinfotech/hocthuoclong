@@ -1,7 +1,7 @@
 import { IpcHandler } from "../main/preload";
 
 declare global {
-  interface MainConfigType {
+  interface SettingType {
     selectedDB: string;
     stickyWindow: {
       width: number;

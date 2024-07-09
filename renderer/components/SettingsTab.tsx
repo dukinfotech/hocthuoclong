@@ -43,7 +43,7 @@ export default function SettingsTab() {
   const resetSettings = async () => {
     const isConfirmed = await show("Bạn có muốn khôi phục mặc định?");
     if (isConfirmed) {
-      window.ipc.invoke("mainConfig.stickyWindow.reset");
+      window.ipc.invoke("settings.stickyWindow.reset");
     }
   };
 
