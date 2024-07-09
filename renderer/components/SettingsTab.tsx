@@ -3,17 +3,19 @@ import { useEffect, useState } from "react";
 import { MdSettingsSuggest } from "react-icons/md";
 import CreateDBButton from "./settings/CreateDBButton";
 
+export const getListDB = async () => {
+  const dbInfo = await window.indexedDB.databases();
+  return dbInfo;
+};
+
 export default function SettingsTab() {
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
 
   useEffect(() => {
-    listDb();
+    getListDB().then(dbInfo => {
+      setDatabases(dbInfo);
+    });
   }, []);
-
-  const listDb = async () => {
-    const dbInfo = await window.indexedDB.databases();
-    setDatabases(dbInfo);
-  };
 
   const resetSettings = () => {
     window.ipc.invoke("mainConfig.stickyWindow.reset");
@@ -21,11 +23,7 @@ export default function SettingsTab() {
 
   return (
     <>
-      <div className="flex justify-end container">
-        <CreateDBButton onSuccess={listDb} databases={databases}/>
-
-        <Spacer y={0.5} />
-
+      <div className="flex justify-end">
         <Button
           size="sm"
           color="danger"
@@ -39,12 +37,15 @@ export default function SettingsTab() {
       </div>
 
       <Spacer y={2} />
-
-      <Select size="sm" color="primary" label="Bộ dữ liệu" className="max-w-xs">
-        {databases.map((db, i) => (
-          <SelectItem key={i}>{db.name}</SelectItem>
-        ))}
-      </Select>
+      <div className="flex justify-center">
+        <Select size="sm" color="primary" label="Bộ dữ liệu" className="max-w-xs">
+          {databases.map((db, i) => (
+            <SelectItem key={i}>{db.name}</SelectItem>
+          ))}
+        </Select>
+        <Spacer x={1} />
+        <CreateDBButton />
+      </div>
     </>
   );
 }
