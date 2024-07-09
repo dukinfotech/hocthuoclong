@@ -15,7 +15,7 @@ const loadDataToDB = (dataSet: DataSetType) => {
     // Get data from excel file
     const data = await readExcelFile(dataSet, fields);
 
-    // Invoke when database version is not exist
+    // Invoked when database version (database schema) is changed
     request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
       console.log("onupgradeneeded")
       const db: IDBDatabase = (event.target as IDBOpenDBRequest).result;
@@ -31,7 +31,7 @@ const loadDataToDB = (dataSet: DataSetType) => {
 
     request.onsuccess = function (event: any) {
       console.log("onsuccess")
-      const db = event.target.result;
+      const db: IDBDatabase = (event.target as IDBOpenDBRequest).result;
     };
 
     request.onerror = function (event: any) {
