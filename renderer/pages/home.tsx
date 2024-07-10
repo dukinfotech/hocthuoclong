@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import { Code, Tab, Tabs } from "@nextui-org/react";
 import HomeTab from "../components/HomeTab";
 import SettingsTab from "../components/SettingsTab";
 import { RiHome2Fill, RiSettings2Fill } from "react-icons/ri";
+import { useSettingStore } from "../stores/setting-store";
 
 export default function HomePage() {
+  const loadSettings = useSettingStore((state) => state.loadSettings);
+
+  useEffect(() => {
+    window.ipc.invoke("mainWindow.ready", true).then(() => {
+      window.ipc.on("setting.load", (settings) => {
+        loadSettings(settings);
+      });
+    });
+  }, []);
+
   return (
     <div className="bg-gray-200 h-screen p-10 mx-auto">
       <Head>

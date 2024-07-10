@@ -6,6 +6,7 @@ interface SettingType {
   stickyWindow: {
     width: number;
     height: number;
+    interval: number;
   };
 }
 
@@ -19,6 +20,7 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
   stickyWindow: {
     width: null,
     height: null,
+    interval: 0,
   },
   loadSettings: (settings: SettingType) => set(() => ({ ...settings })),
   changeSelectedDB: (db) =>

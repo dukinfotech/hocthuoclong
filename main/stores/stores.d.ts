@@ -6,6 +6,7 @@ declare global {
     stickyWindow: {
       width: number;
       height: number;
+      interval: number;
     };
   }
 }

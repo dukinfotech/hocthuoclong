@@ -8,10 +8,17 @@ export default function ipcMainListener(
   mainWindow: BrowserWindow,
   stickyWindow: BrowserWindow
 ) {
-  ipcMain.handle("window-ready", async (event, arg) => {
+  ipcMain.handle("mainWindow.ready", async (event, arg) => {
     // Load user's settings from disk to global state
     mainWindow.webContents.send("setting.load", settings.store);
-  })
+  });
+
+  ipcMain.handle("stickyWindow.ready", async (event, arg) => {
+    console.log('stickyWindow.ready');
+    
+    // Load user's settings from disk to global state
+    stickyWindow.webContents.send("setting.load", settings.store);
+  });
 
   ipcMain.on("mainWindow.isRunInSystemTray", async () => {
     runInSystemTray(mainWindow);
@@ -46,6 +53,7 @@ export default function ipcMainListener(
       } else {
         const port = process.argv[2];
         await stickyWindow.loadURL(`http://localhost:${port}/sticky`);
+        stickyWindow.webContents.openDevTools();
       }
     } else {
       stickyWindow.close();
@@ -62,6 +70,6 @@ export default function ipcMainListener(
   });
 
   ipcMain.on("settings.selectedDB", (e, selectedDB) => {
-    settings.set("selectedDB", selectedDB ? selectedDB : null)
+    settings.set("selectedDB", selectedDB ? selectedDB : null);
   });
 }
