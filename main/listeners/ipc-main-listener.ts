@@ -62,6 +62,6 @@ export default function ipcMainListener(
   });
 
   ipcMain.on("settings.selectedDB", (e, selectedDB) => {
-    settings.set("selectedDB", selectedDB)
+    settings.set("selectedDB", selectedDB ? selectedDB : null)
   });
 }
