@@ -34,9 +34,9 @@ const useDatabase = (dbName) => {
     };
 
     // Close connection on component unmount
-    return () => {
-      request.result.close();
-    };
+    // return () => {
+    //   request.result.close();
+    // };
   }, [dbName]);
 
   return data;
