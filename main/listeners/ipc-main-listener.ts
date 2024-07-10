@@ -13,9 +13,9 @@ export default function ipcMainListener(
     mainWindow.webContents.send("setting.load", settings.store);
   });
 
-  ipcMain.handle("stickyWindow.ready", async (event, arg) => {
-    console.log('stickyWindow.ready');
-    
+  ipcMain.handle("stickyWindow.ready", (event, arg) => {
+    console.log("stickyWindow.ready");
+
     // Load user's settings from disk to global state
     stickyWindow.webContents.send("setting.load", settings.store);
   });
@@ -69,7 +69,9 @@ export default function ipcMainListener(
     }
   });
 
-  ipcMain.on("settings.selectedDB", (e, selectedDB) => {
-    settings.set("selectedDB", selectedDB ? selectedDB : null);
+  ipcMain.on("settings.changed", (e, changedSettings) => {
+    Object.keys(changedSettings).map((key) => {
+      settings.set(key, changedSettings[key]);
+    });
   });
 }

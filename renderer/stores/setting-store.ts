@@ -23,9 +23,9 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
     interval: 0,
   },
   loadSettings: (settings: SettingType) => set(() => ({ ...settings })),
-  changeSelectedDB: (db) =>
-    set(() => {
-      window.ipc.send("settings.selectedDB", db);
-      return { selectedDB: db };
+  changeSelectedDB: (dbName: string) =>
+    set((state) => {
+      window.ipc.send("settings.changed", { selectedDB: dbName });
+      return { selectedDB: dbName };
     }),
 }));

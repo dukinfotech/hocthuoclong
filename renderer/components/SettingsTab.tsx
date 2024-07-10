@@ -4,6 +4,7 @@ import { MdSettingsSuggest } from "react-icons/md";
 import CreateDBButton from "./settings/CreateDBButton";
 import { useConfirmPrompt } from "../providers/ConfirmPromptProvider";
 import { useSettingStore } from "../stores/setting-store";
+import { useGlobalStore } from "../stores/global-store";
 
 export const getListDB = async () => {
   const dbInfo = await window.indexedDB.databases();
@@ -16,6 +17,7 @@ export default function SettingsTab() {
   const [selectedDBKey, setSelectedDBKey] = useState(new Set([selectedDB]));
   
   const changeSelectedDB = useSettingStore((state) => state.changeSelectedDB);
+  const { toggleShowSticky } = useGlobalStore();
 
   const { show } = useConfirmPrompt();
 
@@ -36,6 +38,7 @@ export default function SettingsTab() {
     // Prevent update state on first render
     if (dbName !== null) {
       changeSelectedDB(dbName);
+      toggleShowSticky();
     }
 
   }, [selectedDBKey]);
