@@ -25,15 +25,15 @@ export default function DataTable() {
   return (
     <Table hideHeader={data.length === 0}>
       <TableHeader>
-        {columnNames.map((columnName) => (
-          <TableColumn>{columnName}</TableColumn>
+        {columnNames.map((columnName, i) => (
+          <TableColumn key={i}>{columnName}</TableColumn>
         ))}
       </TableHeader>
       <TableBody emptyContent="Không có dữ liệu">
         {data.map((dataObject, i) => (
           <TableRow key={i}>
-            {columnNames.map((columnName) => (
-              <TableCell>{dataObject[columnName]}</TableCell>
+            {columnNames.map((columnName, j) => (
+              <TableCell key={j}>{dataObject[columnName]}</TableCell>
             ))}
           </TableRow>
         ))}
