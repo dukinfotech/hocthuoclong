@@ -21,9 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <NextUIProvider>
       <ConfirmPromptProvider>
-        <div className="bg-gray-200 h-screen p-10 mx-auto">
-          <Component {...pageProps} />
-        </div>
+        <Component {...pageProps} />
         <ToastContainer
           position="bottom-right"
           autoClose={5000}

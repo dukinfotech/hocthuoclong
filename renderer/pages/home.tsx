@@ -7,7 +7,7 @@ import { RiHome2Fill, RiSettings2Fill } from "react-icons/ri";
 
 export default function HomePage() {
   return (
-    <React.Fragment>
+    <div className="bg-gray-200 h-screen p-10 mx-auto">
       <Head>
         <title>Học Thuộc Lòng</title>
       </Head>
@@ -38,6 +38,6 @@ export default function HomePage() {
       <Code className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
         Developed By Dukinfotech 🍠
       </Code>
-    </React.Fragment>
+    </div>
   );
 }
