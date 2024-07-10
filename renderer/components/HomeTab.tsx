@@ -2,6 +2,8 @@ import { Button, Code, Spacer } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
 import { RiSettings2Fill } from "react-icons/ri";
+import DataTable from "./DataTable";
+import { getListDB } from "./SettingsTab";
 
 export default function HomeTab() {
   const [showSticky, setShowSticky] = useState<boolean>(false);
@@ -21,6 +23,12 @@ export default function HomeTab() {
     }
   }, [showSticky]);
 
+  useEffect(() => {
+    if (selectedDB) {
+      getListDB();
+    }
+  }, [selectedDB])
+
   const runInSystemTray = () => {
     window.ipc.send("mainWindow.isRunInSystemTray", true);
   };
@@ -32,12 +40,17 @@ export default function HomeTab() {
           `Bộ dữ liệu đang chọn: ${selectedDB}`
         ) : (
           <>
-            Chưa chọn bộ dữ liệu. Bấm "<RiSettings2Fill className="inline"/> Cài Đặt" để thiết lập
+            Chưa chọn bộ dữ liệu. Bấm "<RiSettings2Fill className="inline" />{" "}
+            Cài Đặt" để thiết lập
           </>
         )}
       </Code>
 
-      <Spacer y={1} />
+      <Spacer y={3} />
+
+      <DataTable />
+
+      <Spacer y={3} />
 
       <div className="flex justify-center">
         <Button color="success" onClick={runInSystemTray}>

@@ -1,5 +1,6 @@
 import { DataSetType } from "../components/settings/CreateDBModal";
 import * as Excel from "exceljs";
+import { DATA_OBJECT_STORE_NAME } from "../const";
 
 const loadDataToDB = (dataSet: DataSetType) => {
   return new Promise(async (resolve, reject) => {
@@ -18,7 +19,9 @@ const loadDataToDB = (dataSet: DataSetType) => {
       const db: IDBDatabase = (event.target as IDBOpenDBRequest).result;
 
       // Create an objectStore for this database
-      const objectStore = db.createObjectStore("data", { keyPath: "id" });
+      const objectStore = db.createObjectStore(DATA_OBJECT_STORE_NAME, {
+        keyPath: "id",
+      });
 
       // Index fields
       fields.forEach((field) => {
@@ -32,8 +35,8 @@ const loadDataToDB = (dataSet: DataSetType) => {
       const data = await readExcelFile(dataSet, fields);
 
       const db: IDBDatabase = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction("data", "readwrite");
-      const objectStore = transaction.objectStore("data");
+      const transaction = db.transaction(DATA_OBJECT_STORE_NAME, "readwrite");
+      const objectStore = transaction.objectStore(DATA_OBJECT_STORE_NAME);
 
       data.forEach((dataObject) => {
         objectStore.add(dataObject);
