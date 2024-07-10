@@ -4,30 +4,17 @@ import { useSettingStore } from "../stores/setting-store";
 import { RiSettings2Fill } from "react-icons/ri";
 import DataTable from "./DataTable";
 import { getListDB } from "./SettingsTab";
+import { useGlobalStore } from "../stores/global-store";
 
 export default function HomeTab() {
-  const [showSticky, setShowSticky] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { isShowSticky, toggleShowSticky } = useGlobalStore();
   const selectedDB = useSettingStore((state) => state.selectedDB);
-
-  const isFirstRender = useRef<boolean>(true);
-
-  useEffect(() => {
-    if (!isFirstRender.current) {
-      setIsLoading(true);
-      window.ipc
-        .invoke("stickyWindow.isShow", showSticky)
-        .then(() => setIsLoading(false));
-    } else {
-      isFirstRender.current = false;
-    }
-  }, [showSticky]);
 
   useEffect(() => {
     if (selectedDB) {
       getListDB();
     }
-  }, [selectedDB])
+  }, [selectedDB]);
 
   const runInSystemTray = () => {
     window.ipc.send("mainWindow.isRunInSystemTray", true);
@@ -59,12 +46,8 @@ export default function HomeTab() {
 
         <Spacer x={1} />
 
-        <Button
-          color="primary"
-          onClick={() => setShowSticky(!showSticky)}
-          isLoading={isLoading}
-        >
-          {showSticky && !isLoading ? "Ẩn Sticky" : "Hiện Sticky"}
+        <Button color="primary" onClick={toggleShowSticky}>
+          {isShowSticky ? "Ẩn Sticky" : "Hiện Sticky"}
         </Button>
       </div>
     </>

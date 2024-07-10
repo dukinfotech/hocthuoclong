@@ -24,7 +24,7 @@ export default function ipcMainListener(
     runInSystemTray(mainWindow);
   });
 
-  ipcMain.handle("stickyWindow.isShow", async (event, arg) => {
+  ipcMain.on("stickyWindow.isShow", async (event, arg) => {
     if (arg) {
       const { width, height } = screen.getPrimaryDisplay().workAreaSize;
       const windowWith = settings.get("stickyWindow.width") as number;
