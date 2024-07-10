@@ -1,6 +1,7 @@
 import { Button, Code, Spacer } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
+import { RiSettings2Fill } from "react-icons/ri";
 
 export default function HomeTab() {
   const [showSticky, setShowSticky] = useState<boolean>(false);
@@ -26,7 +27,15 @@ export default function HomeTab() {
 
   return (
     <>
-      <Code>Bộ dữ liệu đang chọn: {selectedDB}</Code>
+      <Code color="secondary">
+        {selectedDB ? (
+          `Bộ dữ liệu đang chọn: ${selectedDB}`
+        ) : (
+          <>
+            Chưa chọn bộ dữ liệu. Bấm "<RiSettings2Fill className="inline"/> Cài Đặt" để thiết lập
+          </>
+        )}
+      </Code>
 
       <Spacer y={1} />
 

@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import { Tab, Tabs } from "@nextui-org/react";
+import { Code, Tab, Tabs } from "@nextui-org/react";
 import HomeTab from "../components/HomeTab";
 import SettingsTab from "../components/SettingsTab";
 import { RiHome2Fill, RiSettings2Fill } from "react-icons/ri";
@@ -9,7 +9,7 @@ export default function HomePage() {
   return (
     <React.Fragment>
       <Head>
-        <title>Học thuộc lòng</title>
+        <title>Học Thuộc Lòng</title>
       </Head>
       <Tabs aria-label="Options" color="primary" variant="solid">
         <Tab
@@ -17,7 +17,7 @@ export default function HomePage() {
           title={
             <div className="flex items-center space-x-2">
               <RiHome2Fill />
-              <span>Màn hình chính</span>
+              <span>Màn Hình Chính</span>
             </div>
           }
         >
@@ -28,13 +28,16 @@ export default function HomePage() {
           title={
             <div className="flex items-center space-x-2">
               <RiSettings2Fill />
-              <span>Cài đặt</span>
+              <span>Cài Đặt</span>
             </div>
           }
         >
           <SettingsTab />
         </Tab>
       </Tabs>
+      <Code className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+        Developed By Dukinfotech 🍠
+      </Code>
     </React.Fragment>
   );
 }
