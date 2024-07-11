@@ -17,6 +17,7 @@ export default function NextPage() {
 
   const [counter, setCounter] = useState<number>(0);
   const [text, setText] = useState<string>("");
+  const interval = useRef<any>(0);
 
   useEffect(() => {
     if (data.length > 0) {
@@ -57,24 +58,38 @@ export default function NextPage() {
 
   useEffect(() => {
     if (data.length > 0) {
-      const interval = setInterval(() => {
-        if (stickyWindow.isRandom) {
-          const _randomCounter = randomCounter(data.length);
-          setCounter(_randomCounter);
-        } else {
-          setCounter((prevCounter) =>
-            prevCounter >= data.length - 1 ? 0 : prevCounter + 1
-          );
-        }
-      }, stickyWindow.interval);
-
-      return () => clearInterval(interval); // Cleanup interval on component unmount
+      startInterval();
+      return () => pauseInterval(); // Cleanup interval on component unmount
     }
   }, [data.length]);
 
+  const startInterval = () => {
+    console.log("startInterval");
+    interval.current = setInterval(() => {
+      if (stickyWindow.isRandom) {
+        const _randomCounter = randomCounter(data.length);
+        setCounter(_randomCounter);
+      } else {
+        setCounter((prevCounter) =>
+          prevCounter >= data.length - 1 ? 0 : prevCounter + 1
+        );
+      }
+    }, stickyWindow.interval);
+  };
+
+  const pauseInterval = () => {
+    console.log("pauseInterval");
+    clearInterval(interval.current);
+  };
+
   return (
     <React.Fragment>
-      <Code color="default" style={{ display: "flex", alignItems: "center" }}>
+      <Code
+        color="default"
+        style={{ display: "flex", alignItems: "center" }}
+        onMouseEnter={pauseInterval}
+        onMouseLeave={startInterval}
+      >
         <RiDraggable className="draggable" />
         <span
           className="pl-2"
