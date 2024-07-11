@@ -5,3 +5,9 @@ export const shuffleArray = (array: Array<any>) => {
   }
   return array;
 };
+
+export const textContentFromHTML = (html: string) => {
+  var div = document.createElement("div");
+  div.innerHTML = html.trim();
+  return div.textContent;
+};

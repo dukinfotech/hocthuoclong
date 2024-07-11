@@ -79,7 +79,11 @@ export default function DataTable() {
             {columnNames.map((columnName) => (
               <TableCell key={columnName.key}>
                 {columnName.key !== REMEMBER_FIELD ? (
-                  dataObject[columnName.key]
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: dataObject[columnName.key],
+                    }}
+                  ></span>
                 ) : (
                   <Checkbox
                     defaultSelected={dataObject[columnName.key] === "true"}

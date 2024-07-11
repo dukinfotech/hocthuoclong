@@ -6,7 +6,7 @@ import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
 import { REMEMBER_FIELD } from "../const";
-import { shuffleArray } from "../helpers/utils";
+import { textContentFromHTML } from "../helpers/utils";
 
 export default function NextPage() {
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
@@ -32,6 +32,7 @@ export default function NextPage() {
         if (selectedDataObject) {
           const arrayValues = Object.values(selectedDataObject);
           const id = arrayValues.shift();
+          arrayValues.shift(); // remove isRemembered
 
           await kuroshiro.init(
             new KuromojiAnalyzer({ dictPath: "kuromoji/dict" })
@@ -75,10 +76,13 @@ export default function NextPage() {
 
   useEffect(() => {
     if (texts.length === 1) {
-      window.resizeTo(texts[0].length * 10, stickyWindow.height);
+      window.resizeTo(
+        textContentFromHTML(texts[0]).length * 10,
+        stickyWindow.height
+      );
     } else if (texts.length > 1) {
       window.resizeTo(
-        longestText.length * 10,
+        textContentFromHTML(longestText).length * 10,
         stickyWindow.height * texts.length
       );
     }

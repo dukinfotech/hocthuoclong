@@ -71,7 +71,7 @@ const readExcelFile = async (dataSet: DataSetType, fields: string[]) => {
       if (j === 0) {
         dataObject[field] = "false"; // Default isRemembered = false
       } else {
-        dataObject[field] = row.getCell(j).text;
+        dataObject[field] = convertCellToHTML(row.getCell(j));
       }
     });
 
@@ -90,5 +90,36 @@ function readFile(file: File) {
     };
   });
 }
+
+const convertCellToHTML = (cell: Excel.Cell) => {
+  let html = "<span";
+  if (cell.style) {
+    const styleString = styleToCSS(cell.style);
+    if (styleString) {
+      html += ` style="${styleString.trim()}"`;
+    }
+  }
+
+  html += ">";
+  html += cell.text;
+  html += "</span>";
+
+  return html;
+};
+
+const styleToCSS = (cellStyle: Partial<Excel.Style>) => {
+  let styleString = "";
+
+  if (cellStyle.font) {
+    if (cellStyle.font.bold) styleString += "font-weight: bold; ";
+    if (cellStyle.font.italic) styleString += "font-style: italic; ";
+    if (cellStyle.font.size)
+      styleString += `font-size: ${cellStyle.font.size}pt; `;
+    if (cellStyle.font.color && cellStyle.font.color.argb)
+      styleString += `color: #${cellStyle.font.color.argb.slice(2)}; `;
+  }
+
+  return styleString;
+};
 
 export { loadDataToDB };
