@@ -3,6 +3,8 @@ import { RiDraggable } from "react-icons/ri";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
 import useDatabase from "../hooks/useDatabase";
+import Kuroshiro from "kuroshiro";
+import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
 
 export default function NextPage() {
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
@@ -10,16 +12,31 @@ export default function NextPage() {
   // Fetch data from database
   const data = useDatabase(selectedDB);
 
+  // Furigana
+  const kuroshiro = new Kuroshiro();
+
   const [counter, setCounter] = useState<number>(0);
-  const text = useMemo(() => {
-    let _text = "";
+  const [text, setText] = useState<string>("");
+
+  useEffect(() => {
     if (data.length > 0) {
-      const selectedDataObject = data[counter];
-      if (selectedDataObject) {
-        _text = Object.values(selectedDataObject).join(stickyWindow.splitedBy);
-      }
+      (async () => {
+        const selectedDataObject = data[counter];
+        if (selectedDataObject) {
+          const arrayValues = Object.values(selectedDataObject);
+          const id = arrayValues.shift();
+          let _text = `${id}. ` + arrayValues.join(stickyWindow.splitedBy);
+          await kuroshiro.init(
+            new KuromojiAnalyzer({ dictPath: "kuromoji/dict" })
+          );
+          _text = await kuroshiro.convert(_text, {
+            mode: "furigana",
+            to: "hiragana",
+          });
+          setText(_text);
+        }
+      })();
     }
-    return _text;
   }, [counter, data.length]);
 
   function randomCounter(max) {
@@ -59,7 +76,10 @@ export default function NextPage() {
     <React.Fragment>
       <Code color="default" style={{ display: "flex", alignItems: "center" }}>
         <RiDraggable className="draggable" />
-        <span>{text}</span>
+        <span
+          className="pl-2"
+          dangerouslySetInnerHTML={{ __html: text }}
+        ></span>
       </Code>
     </React.Fragment>
   );
