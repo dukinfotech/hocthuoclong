@@ -15,6 +15,7 @@ import { useSettingStore } from "../stores/setting-store";
 import { useGlobalStore } from "../stores/global-store";
 import { PiClockCountdown, PiSplitHorizontal } from "react-icons/pi";
 import { BsDatabase } from "react-icons/bs";
+import { toast } from "react-toastify";
 
 export const getListDB = async () => {
   const dbInfo = await window.indexedDB.databases();
@@ -94,6 +95,7 @@ export default function SettingsTab() {
       resetSettings();
       setSelectedDBKey(new Set([]));
       reloadSticky();
+      toast.success("Đã khôi phục cài đặt mặc định");
     }
   };
 
