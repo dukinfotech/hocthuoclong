@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   Table,
   TableBody,
   TableCell,
@@ -9,10 +10,11 @@ import {
 import useData from "../hooks/useData";
 import { useSettingStore } from "../stores/setting-store";
 import { useMemo } from "react";
+import { REMEMBER_FIELD } from "../const";
 
 export default function DataTable() {
   const selectedDB = useSettingStore((state) => state.selectedDB);
-  const data = useData(selectedDB);
+  const { data, update } = useData(selectedDB);
 
   const columnNames = useMemo(() => {
     if (data.length > 0) {
@@ -21,6 +23,11 @@ export default function DataTable() {
       return ["default"];
     }
   }, [data]);
+
+  const toggleRemember = (key: string, e: any) => {
+    console.log(key);
+    update(key, REMEMBER_FIELD, e.target.checked.toString());
+  };
 
   return (
     <Table
@@ -39,7 +46,16 @@ export default function DataTable() {
         {data.map((dataObject, i) => (
           <TableRow key={i}>
             {columnNames.map((columnName, j) => (
-              <TableCell key={j}>{dataObject[columnName]}</TableCell>
+              <TableCell key={j}>
+                {j !== 1 ? (
+                  dataObject[columnName]
+                ) : (
+                  <Checkbox
+                    defaultSelected={dataObject[columnName] === "true"}
+                    onChange={(e) => toggleRemember(dataObject["id"], e)}
+                  />
+                )}
+              </TableCell>
             ))}
           </TableRow>
         ))}

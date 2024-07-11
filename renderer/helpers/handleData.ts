@@ -1,13 +1,13 @@
 import { DataSetType } from "../components/settings/CreateDBModal";
 import * as Excel from "exceljs";
-import { DATA_OBJECT_STORE_NAME } from "../const";
+import { DATA_OBJECT_STORE_NAME, REMEMBER_FIELD } from "../const";
 
 const loadDataToDB = (dataSet: DataSetType) => {
   return new Promise(async (resolve, reject) => {
     const request = window.indexedDB.open(dataSet.name);
 
     // Define field name
-    const fields = [];
+    const fields = [REMEMBER_FIELD];
     for (let i = 1; i <= dataSet.column; i++) {
       const field = `field${i}`;
       fields.push(field);
@@ -68,7 +68,12 @@ const readExcelFile = async (dataSet: DataSetType, fields: string[]) => {
     dataObject["id"] = i + 1;
 
     fields.forEach((field, j) => {
-      dataObject[field] = row.getCell(j + 1).text;
+      console.log(field, j);
+      if (j === 0) {
+        dataObject[field] = "false"; // Default isRemembered = false
+      } else {
+        dataObject[field] = row.getCell(j + 2).text;
+      }
     });
 
     data.push(dataObject);

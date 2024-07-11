@@ -5,12 +5,17 @@ import { useSettingStore } from "../stores/setting-store";
 import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
+import { REMEMBER_FIELD } from "../const";
+import { shuffleArray } from "../helpers/utils";
 
 export default function NextPage() {
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
 
   // Fetch data from database
-  const data = useData(selectedDB);
+  const { data } = useData(selectedDB);
+  let prettyData = data.filter(
+    (dataObject) => dataObject[REMEMBER_FIELD] === "false"
+  );
 
   // Furigana
   const kuroshiro = new Kuroshiro();
@@ -21,9 +26,9 @@ export default function NextPage() {
   const interval = useRef<any>(0);
 
   useEffect(() => {
-    if (data.length > 0) {
+    if (prettyData.length > 0) {
       (async () => {
-        const selectedDataObject = data[counter];
+        const selectedDataObject = prettyData[counter];
         if (selectedDataObject) {
           const arrayValues = Object.values(selectedDataObject);
           const id = arrayValues.shift();
@@ -56,7 +61,7 @@ export default function NextPage() {
         }
       })();
     }
-  }, [counter, data.length]);
+  }, [counter, prettyData.length]);
 
   function randomCounter(max) {
     return Math.floor(Math.random() * (max + 1));
@@ -88,21 +93,21 @@ export default function NextPage() {
   }, []);
 
   useEffect(() => {
-    if (data.length > 0) {
+    if (prettyData.length > 0) {
       startInterval();
       return () => pauseInterval(); // Cleanup interval on component unmount
     }
-  }, [data.length]);
+  }, [prettyData.length]);
 
   const startInterval = () => {
     console.log("startInterval");
     interval.current = setInterval(() => {
       if (stickyWindow.isRandom) {
-        const _randomCounter = randomCounter(data.length);
+        const _randomCounter = randomCounter(prettyData.length);
         setCounter(_randomCounter);
       } else {
         setCounter((prevCounter) =>
-          prevCounter >= data.length - 1 ? 0 : prevCounter + 1
+          prevCounter >= prettyData.length - 1 ? 0 : prevCounter + 1
         );
       }
     }, stickyWindow.interval);
