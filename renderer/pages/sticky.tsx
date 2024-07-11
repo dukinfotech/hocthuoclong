@@ -7,6 +7,8 @@ import useDatabase from "../hooks/useDatabase";
 export default function NextPage() {
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
 
+  console.log(stickyWindow.isRandom)
+
   // Fetch data from database
   const data = useDatabase(selectedDB);
 

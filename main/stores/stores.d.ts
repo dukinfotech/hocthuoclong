@@ -7,6 +7,7 @@ declare global {
       width: number;
       height: number;
       interval: number;
+      isRandom: boolean;
     };
   }
 }

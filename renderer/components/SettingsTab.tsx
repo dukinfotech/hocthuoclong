@@ -1,5 +1,12 @@
-import { Button, Input, Select, SelectItem, Spacer } from "@nextui-org/react";
-import { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Input,
+  Select,
+  SelectItem,
+  Spacer,
+  Switch,
+} from "@nextui-org/react";
+import { useEffect, useRef, useState } from "react";
 import { MdSettingsSuggest } from "react-icons/md";
 import CreateDBButton from "./settings/CreateDBButton";
 import { useConfirmPrompt } from "../providers/ConfirmPromptProvider";
@@ -7,6 +14,7 @@ import { useSettingStore } from "../stores/setting-store";
 import { useGlobalStore } from "../stores/global-store";
 import { PiClockCountdown } from "react-icons/pi";
 import { BsDatabase } from "react-icons/bs";
+import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
 
 export const getListDB = async () => {
   const dbInfo = await window.indexedDB.databases();
@@ -15,12 +23,19 @@ export const getListDB = async () => {
 
 export default function SettingsTab() {
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
-  const { selectedDB, stickyWindow, changeInterval, changeSelectedDB } =
-    useSettingStore();
+  const {
+    selectedDB,
+    stickyWindow,
+    changeIsRandom,
+    changeInterval,
+    changeSelectedDB,
+    resetSettings,
+  } = useSettingStore();
   const [selectedDBKey, setSelectedDBKey] = useState(new Set([selectedDB]));
 
   const { isShowSticky, toggleShowSticky } = useGlobalStore();
   const { show } = useConfirmPrompt();
+  const renderCount = useRef<number>(1);
 
   const updateListDBSelect = () => {
     getListDB().then((dbInfo) => {
@@ -32,32 +47,47 @@ export default function SettingsTab() {
     updateListDBSelect();
   }, []);
 
+  // useEffect(() => {
+  //     console.log(selectedDB);
+  //     if (selectedDB) {
+  //       setSelectedDBKey(new Set([selectedDB]));
+  //     }
+  // }, [selectedDB]);
+
   useEffect(() => {
     const value = selectedDBKey.values();
-    const dbName = value.next().value;
+    const dbName = value.next().value as string;
 
     // Prevent update state on first render
     if (dbName !== selectedDB) {
       changeSelectedDB(dbName || null);
-      if (isShowSticky) {
-        toggleShowSticky();
-        toggleShowSticky();
-      }
+      reloadSticky();
     }
   }, [selectedDBKey]);
 
   const handleChangeInterval = (value) => {
     changeInterval(parseInt(value) || 1);
+    reloadSticky();
+  };
+
+  const handleChangeIsRandom = (isSelected: boolean) => {
+    changeIsRandom(isSelected);
+    reloadSticky();
+  };
+
+  const reloadSticky = () => {
     if (isShowSticky) {
       toggleShowSticky();
       toggleShowSticky();
     }
   };
 
-  const resetSettings = async () => {
+  const handleRestoreFactory = async () => {
     const isConfirmed = await show("Bạn có muốn khôi phục mặc định?");
     if (isConfirmed) {
-      window.ipc.invoke("stickyWindow.reset");
+      resetSettings();
+      setSelectedDBKey(new Set([]));
+      reloadSticky();
     }
   };
 
@@ -69,7 +99,7 @@ export default function SettingsTab() {
           color="danger"
           isIconOnly
           title="Khôi phục mặc định"
-          onClick={resetSettings}
+          onClick={handleRestoreFactory}
         >
           <MdSettingsSuggest />
         </Button>
@@ -101,6 +131,7 @@ export default function SettingsTab() {
 
         <Input
           isRequired
+          color="primary"
           startContent={<PiClockCountdown />}
           label="Thời gian trễ mỗi từ (giây)"
           type="number"
@@ -109,6 +140,18 @@ export default function SettingsTab() {
           onValueChange={handleChangeInterval}
           variant="flat"
         />
+
+        <Spacer y={2} />
+
+        <Switch
+          color="primary"
+          size="md"
+          value={String(stickyWindow.isRandom)}
+          onValueChange={handleChangeIsRandom}
+          thumbIcon={<GiPerspectiveDiceSixFacesRandom />}
+        >
+          Random các từ
+        </Switch>
       </div>
     </>
   );
