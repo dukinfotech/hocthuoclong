@@ -6,16 +6,20 @@ export const runInSystemTray = (mainWindow: BrowserWindow) => {
   const icon = nativeImage.createFromPath(`resources/${APP_LOGO}`);
   const tray = new Tray(icon);
 
+  const showMainWindow = () => {
+    mainWindow.show();
+    tray.destroy();
+  };
+
   const contextMenu = Menu.buildFromTemplate([
-    { label: "Hiện", type: "normal", click: mainWindow.show },
+    { label: "Hiện", type: "normal", click: showMainWindow },
     { label: "Thoát", type: "normal", click: handleQuit },
   ]);
 
   tray.setToolTip(APP_NAME);
   tray.setContextMenu(contextMenu);
   tray.on("double-click", () => {
-    mainWindow.show();
-    tray.destroy();
+    showMainWindow();
   });
 };
 
