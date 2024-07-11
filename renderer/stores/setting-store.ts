@@ -13,6 +13,7 @@ interface SettingType {
 interface SettingStoreType extends SettingType {
   changeSelectedDB: (db: string) => void;
   loadSettings: (settings: unknown) => void;
+  changeInterval: (seconds: number) => void;
 }
 
 export const useSettingStore = create<SettingStoreType>((set) => ({
@@ -27,5 +28,14 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
     set((state) => {
       window.ipc.send("settings.changed", { selectedDB: dbName });
       return { selectedDB: dbName };
+    }),
+  changeInterval: (seconds: number) =>
+    set((state) => {
+      window.ipc.send("settings.changed", {
+        stickyWindow: { ...state.stickyWindow, interval: seconds * 1000 },
+      });
+      return {
+        stickyWindow: { ...state.stickyWindow, interval: seconds * 1000 },
+      };
     }),
 }));
