@@ -5,6 +5,7 @@ import HomeTab from "../components/HomeTab";
 import SettingsTab from "../components/SettingsTab";
 import { RiHome2Fill, RiSettings2Fill } from "react-icons/ri";
 import { useSettingStore } from "../stores/setting-store";
+import { APP_LOGO } from "../const";
 
 export default function HomePage() {
   const loadSettings = useSettingStore((state) => state.loadSettings);
@@ -21,6 +22,7 @@ export default function HomePage() {
     <div className="bg-gray-200 h-screen p-10 mx-auto">
       <Head>
         <title>Học Thuộc Lòng</title>
+        <link rel="shortcut icon" href={APP_LOGO} type="image/x-icon" />
       </Head>
       <Tabs aria-label="Options" color="primary" variant="solid">
         <Tab

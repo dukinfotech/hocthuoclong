@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "my-nextron-app",
-  "description": "My application description",
+  "name": "Học Thuộc Lòng",
+  "description": "Ứng dụng giúp dân văn phòng học thuộc lòng mọi thứ 😉",
   "version": "1.0.0",
-  "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
+  "author": "dukinfotech@gmail.com",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
