@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useSettingStore } from "../stores/setting-store";
 import { RiSettings2Fill } from "react-icons/ri";
 import DataTable from "./DataTable";
-import { getListDB } from "./SettingsTab";
 import { useGlobalStore } from "../stores/global-store";
 import { TbBoxAlignBottomRight } from "react-icons/tb";
 import { PiTextTLight, PiTextTSlash } from "react-icons/pi";
@@ -11,12 +10,6 @@ import { PiTextTLight, PiTextTSlash } from "react-icons/pi";
 export default function HomeTab() {
   const { isShowSticky, toggleShowSticky } = useGlobalStore();
   const selectedDB = useSettingStore((state) => state.selectedDB);
-
-  useEffect(() => {
-    if (selectedDB) {
-      getListDB();
-    }
-  }, [selectedDB]);
 
   const runInSystemTray = () => {
     window.ipc.send("mainWindow.isRunInSystemTray", true);

@@ -1,26 +1,21 @@
 import {
   Button,
-  cn,
   Input,
   Select,
   SelectItem,
   Spacer,
   Switch,
 } from "@nextui-org/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MdSettingsSuggest } from "react-icons/md";
 import CreateDBButton from "./settings/CreateDBButton";
 import { useConfirmPrompt } from "../providers/ConfirmPromptProvider";
 import { useSettingStore } from "../stores/setting-store";
 import { useGlobalStore } from "../stores/global-store";
 import { PiClockCountdown, PiSplitHorizontal } from "react-icons/pi";
-import { BsDatabase } from "react-icons/bs";
+import { BsDatabase, BsTrash3 } from "react-icons/bs";
 import { toast } from "react-toastify";
-
-export const getListDB = async () => {
-  const dbInfo = await window.indexedDB.databases();
-  return dbInfo;
-};
+import useDatabase from "../hooks/useDatabase";
 
 export default function SettingsTab() {
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
@@ -35,26 +30,19 @@ export default function SettingsTab() {
     resetSettings,
   } = useSettingStore();
   const [selectedDBKey, setSelectedDBKey] = useState(new Set([selectedDB]));
+  const { listDB, deleteDB } = useDatabase();
 
   const { isShowSticky, toggleShowSticky } = useGlobalStore();
   const { show } = useConfirmPrompt();
 
-  const updateListDBSelect = () => {
-    getListDB().then((dbInfo) => {
-      setDatabases(dbInfo);
-    });
+  const updateListDB = async () => {
+    const _listDB = await listDB();
+    setDatabases(_listDB);
   };
 
   useEffect(() => {
-    updateListDBSelect();
+    updateListDB();
   }, []);
-
-  // useEffect(() => {
-  //     console.log(selectedDB);
-  //     if (selectedDB) {
-  //       setSelectedDBKey(new Set([selectedDB]));
-  //     }
-  // }, [selectedDB]);
 
   useEffect(() => {
     const value = selectedDBKey.values();
@@ -104,6 +92,17 @@ export default function SettingsTab() {
     reloadSticky();
   };
 
+  const handleDeleteDB = async (dbName: string) => {
+    const isConfirmed = await show(`Xoá bộ dữ liệu: ${dbName}?`);
+    if (isConfirmed) {
+      deleteDB(dbName);
+      setSelectedDBKey(new Set([]));
+      reloadSticky();
+      updateListDB();
+      toast.success(`Đã xoá bộ dữ liệu: ${dbName}`);
+    }
+  };
+
   return (
     <>
       <div className="flex justify-end">
@@ -131,13 +130,26 @@ export default function SettingsTab() {
             onSelectionChange={(e: any) => setSelectedDBKey(e)}
           >
             {databases.map((db, i) => (
-              <SelectItem key={db.name} value={db.name}>
+              <SelectItem
+                key={db.name}
+                value={db.name}
+                endContent={
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    color="danger"
+                    onPress={() => handleDeleteDB(db.name)}
+                  >
+                    <BsTrash3 />
+                  </Button>
+                }
+              >
                 {db.name}
               </SelectItem>
             ))}
           </Select>
           <Spacer x={1} />
-          <CreateDBButton onClose={updateListDBSelect} />
+          <CreateDBButton onClose={updateListDB} />
         </div>
 
         <Spacer y={2} />

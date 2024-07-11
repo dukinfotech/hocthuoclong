@@ -6,13 +6,13 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import useDatabase from "../hooks/useDatabase";
+import useData from "../hooks/useData";
 import { useSettingStore } from "../stores/setting-store";
 import { useMemo } from "react";
 
 export default function DataTable() {
   const selectedDB = useSettingStore((state) => state.selectedDB);
-  const data = useDatabase(selectedDB);
+  const data = useData(selectedDB);
 
   const columnNames = useMemo(() => {
     if (data.length > 0) {
@@ -27,7 +27,7 @@ export default function DataTable() {
       hideHeader={data.length === 0}
       isHeaderSticky
       classNames={{
-        base: "max-h-[50vh] overflow-auto"
+        base: "max-h-[50vh] overflow-auto",
       }}
     >
       <TableHeader>

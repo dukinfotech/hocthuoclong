@@ -8,9 +8,9 @@ import {
   Spacer,
 } from "@nextui-org/react";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { getListDB } from "../SettingsTab";
 import { loadDataToDB } from "../../helpers/handleData";
 import { toast } from "react-toastify";
+import useDataBase from "../../hooks/useDatabase";
 
 export type DataSetType = {
   name: string;
@@ -24,6 +24,7 @@ interface CreateDBModalProps {
 }
 
 export default function CreateDBModal({ onClose }: CreateDBModalProps) {
+  const { listDB } = useDataBase();
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
   const [dataSet, setDataSet] = useState<DataSetType>({
     name: "",
@@ -47,8 +48,13 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
     );
   }, [dataSet]);
 
+  const updateListDB = async () => {
+    const _listDB = await listDB();
+    setDatabases(_listDB);
+  };
+
   useEffect(() => {
-    getListDB().then((dbInfo) => setDatabases(dbInfo));
+    updateListDB();
   }, []);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {

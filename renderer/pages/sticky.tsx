@@ -2,7 +2,7 @@ import { Code } from "@nextui-org/react";
 import { RiDraggable } from "react-icons/ri";
 import React, { useEffect, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
-import useDatabase from "../hooks/useDatabase";
+import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
 
@@ -10,7 +10,7 @@ export default function NextPage() {
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
 
   // Fetch data from database
-  const data = useDatabase(selectedDB);
+  const data = useData(selectedDB);
 
   // Furigana
   const kuroshiro = new Kuroshiro();

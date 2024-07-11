@@ -1,45 +1,31 @@
-import { useEffect, useState } from 'react';
-import { DATA_OBJECT_STORE_NAME } from '../const';
+const useDataBase = () => {
+  const listDB = async () => {
+    const listDB = await window.indexedDB.databases();
+    return listDB;
+  };
 
-const useDatabase = (dbName) => {
-  const [data, setData] = useState<Array<object>>([]);
+  const deleteDB = (dbName: string) => {
+    return new Promise<void>((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(dbName);
 
-  useEffect(() => {
-    if (! dbName) return;
-    // Open connection to IndexedDB
-    const request = window.indexedDB.open(dbName);
-
-    request.onerror = function(event: any) {
-      console.error("Database error: " + event.target.errorCode);
-    };
-
-    request.onsuccess = function(event) {
-      const db = (event.target as IDBOpenDBRequest).result;
-
-      // Open transaction to access object store
-      const transaction = db.transaction(DATA_OBJECT_STORE_NAME, 'readonly');
-      const objectStore = transaction.objectStore(DATA_OBJECT_STORE_NAME);
-
-      // Get all data from object store
-      const getAllRequest = objectStore.getAll();
-
-      getAllRequest.onsuccess = function(event) {
-        const result: any = (event.target as IDBOpenDBRequest).result
-        setData(result);
+      request.onsuccess = () => {
+        console.log(`Database ${dbName} deleted successfully`);
+        resolve();
       };
 
-      getAllRequest.onerror = function(event: any) {
-        console.error("Error getting data from IndexedDB:", event.target.error);
+      request.onerror = (event) => {
+        console.error(`Error deleting database ${dbName}`, event);
+        reject(event);
       };
-    };
 
-    // Close connection on component unmount
-    // return () => {
-    //   request.result.close();
-    // };
-  }, [dbName]);
+      request.onblocked = () => {
+        console.warn(`Database ${dbName} delete blocked`);
+        reject(new Error("Delete blocked"));
+      };
+    });
+  };
 
-  return data;
+  return { listDB, deleteDB };
 };
 
-export default useDatabase;
+export default useDataBase;
