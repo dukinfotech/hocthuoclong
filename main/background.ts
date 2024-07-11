@@ -20,8 +20,8 @@ let stickyWindow: BrowserWindow;
   await app.whenReady();
 
   mainWindow = createWindow("main", {
-    width: 800,
-    height: 600,
+    minWidth: 800,
+    minHeight: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },

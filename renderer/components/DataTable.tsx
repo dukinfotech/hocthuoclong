@@ -23,7 +23,13 @@ export default function DataTable() {
   }, [data]);
 
   return (
-    <Table hideHeader={data.length === 0}>
+    <Table
+      hideHeader={data.length === 0}
+      isHeaderSticky
+      classNames={{
+        base: "max-h-[50vh] overflow-auto"
+      }}
+    >
       <TableHeader>
         {columnNames.map((columnName, i) => (
           <TableColumn key={i}>{columnName}</TableColumn>
