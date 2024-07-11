@@ -17,7 +17,7 @@ export default function SettingsTab() {
   const [selectedDBKey, setSelectedDBKey] = useState(new Set([selectedDB]));
   
   const changeSelectedDB = useSettingStore((state) => state.changeSelectedDB);
-  const { toggleShowSticky } = useGlobalStore();
+  const { isShowSticky, toggleShowSticky } = useGlobalStore();
 
   const { show } = useConfirmPrompt();
 
@@ -36,9 +36,12 @@ export default function SettingsTab() {
     const dbName = value.next().value;
     
     // Prevent update state on first render
-    if (dbName !== null) {
-      changeSelectedDB(dbName);
-      toggleShowSticky();
+    if (dbName !== selectedDB) {
+      changeSelectedDB(dbName || null);
+      if (isShowSticky) {
+        toggleShowSticky();
+        toggleShowSticky();
+      }
     }
 
   }, [selectedDBKey]);

@@ -35,7 +35,7 @@ export default function HomeTab() {
 
       <Spacer y={3} />
 
-      <DataTable />
+      {selectedDB && <DataTable />}
 
       <Spacer y={3} />
 
