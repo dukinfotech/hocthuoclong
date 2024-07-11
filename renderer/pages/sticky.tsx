@@ -12,18 +12,23 @@ export default function NextPage() {
 
   const [counter, setCounter] = useState<number>(0);
   const text = useMemo(() => {
+    let _text = "";
     if (data.length > 0) {
       const selectedDataObject = data[counter];
       if (selectedDataObject) {
-        return Object.values(selectedDataObject).join(" ");
+        _text = Object.values(selectedDataObject).join(" ");
       }
     }
-    return "";
+    return _text;
   }, [counter, data.length]);
 
   function randomCounter(max) {
     return Math.floor(Math.random() * (max + 1));
   }
+
+  useEffect(() => {
+    window.resizeTo(text.length * 10, stickyWindow.height);
+  }, [text.length]);
 
   useEffect(() => {
     window.ipc.invoke("stickyWindow.ready", true).then(() => {
