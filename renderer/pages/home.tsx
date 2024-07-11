@@ -48,7 +48,7 @@ export default function HomePage() {
           <SettingsTab />
         </Tab>
       </Tabs>
-      <Code className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+      <Code className="absolute bottom-0 left-1/2 transform -translate-x-1/2" title="Bản quyền phần mềm thuộc về: dukinfotech@gmail.com">
         Developed By Dukinfotech 🍠
       </Code>
     </div>
