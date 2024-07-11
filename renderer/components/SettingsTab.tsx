@@ -1,5 +1,6 @@
 import {
   Button,
+  cn,
   Input,
   Select,
   SelectItem,
@@ -146,11 +147,12 @@ export default function SettingsTab() {
         <Switch
           color="primary"
           size="md"
-          value={String(stickyWindow.isRandom)}
+          isSelected={stickyWindow.isRandom}
           onValueChange={handleChangeIsRandom}
-          thumbIcon={<GiPerspectiveDiceSixFacesRandom />}
         >
-          Random các từ
+          <div className="flex flex-col gap-1">
+            <p className="text-medium">Xáo trộn các từ</p>
+          </div>
         </Switch>
       </div>
     </>

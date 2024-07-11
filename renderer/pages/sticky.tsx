@@ -7,8 +7,6 @@ import useDatabase from "../hooks/useDatabase";
 export default function NextPage() {
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
 
-  console.log(stickyWindow.isRandom)
-
   // Fetch data from database
   const data = useDatabase(selectedDB);
 
@@ -23,6 +21,10 @@ export default function NextPage() {
     return "";
   }, [counter, data.length]);
 
+  function randomCounter(max) {
+    return Math.floor(Math.random() * (max + 1));
+  }
+
   useEffect(() => {
     window.ipc.invoke("stickyWindow.ready", true).then(() => {
       window.ipc.on("setting.load", (settings) => {
@@ -34,9 +36,14 @@ export default function NextPage() {
   useEffect(() => {
     if (data.length > 0) {
       const interval = setInterval(() => {
-        setCounter((prevCounter) =>
-          prevCounter >= data.length - 1 ? 0 : prevCounter + 1
-        );
+        if (stickyWindow.isRandom) {
+          const _randomCounter = randomCounter(data.length);
+          setCounter(_randomCounter);
+        } else {
+          setCounter((prevCounter) =>
+            prevCounter >= data.length - 1 ? 0 : prevCounter + 1
+          );
+        }
       }, stickyWindow.interval);
 
       return () => clearInterval(interval); // Cleanup interval on component unmount
