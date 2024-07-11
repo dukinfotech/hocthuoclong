@@ -26,6 +26,7 @@ export default function SettingsTab() {
   const {
     selectedDB,
     stickyWindow,
+    changeIsBreakLine,
     changeIsRandom,
     changeInterval,
     changeSelectedDB,
@@ -72,6 +73,11 @@ export default function SettingsTab() {
 
   const handleChangeIsRandom = (isSelected: boolean) => {
     changeIsRandom(isSelected);
+    reloadSticky();
+  };
+
+  const handleChangeIsBreakLine = (isBreakLine: boolean) => {
+    changeIsBreakLine(isBreakLine);
     reloadSticky();
   };
 
@@ -161,14 +167,29 @@ export default function SettingsTab() {
 
         <Spacer y={2} />
 
-        <Input
+        <Switch
           color="primary"
-          startContent={<PiSplitHorizontal />}
-          label="Ký tự ngăn cách"
-          value={stickyWindow.splitedBy}
-          onValueChange={handleChangeSplitedBy}
-          variant="flat"
-        />
+          size="md"
+          isSelected={stickyWindow.isBreakLine}
+          onValueChange={handleChangeIsBreakLine}
+        >
+          <div className="flex flex-col gap-1">
+            <p className="text-medium">Xuống dòng mỗi mục</p>
+          </div>
+        </Switch>
+
+        <Spacer y={2} />
+
+        {!stickyWindow.isBreakLine && (
+          <Input
+            color="primary"
+            startContent={<PiSplitHorizontal />}
+            label="Ký tự ngăn cách"
+            value={stickyWindow.splitedBy}
+            onValueChange={handleChangeSplitedBy}
+            variant="flat"
+          />
+        )}
       </div>
     </>
   );

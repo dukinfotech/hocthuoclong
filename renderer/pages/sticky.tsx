@@ -1,6 +1,6 @@
 import { Code } from "@nextui-org/react";
 import { RiDraggable } from "react-icons/ri";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
 import useDatabase from "../hooks/useDatabase";
 import Kuroshiro from "kuroshiro";
@@ -16,7 +16,8 @@ export default function NextPage() {
   const kuroshiro = new Kuroshiro();
 
   const [counter, setCounter] = useState<number>(0);
-  const [text, setText] = useState<string>("");
+  const [texts, setTexts] = useState<string[]>([]);
+  const [longestText, setLongestText] = useState<string>("");
   const interval = useRef<any>(0);
 
   useEffect(() => {
@@ -26,15 +27,32 @@ export default function NextPage() {
         if (selectedDataObject) {
           const arrayValues = Object.values(selectedDataObject);
           const id = arrayValues.shift();
-          let _text = `${id}. ` + arrayValues.join(stickyWindow.splitedBy);
+
           await kuroshiro.init(
             new KuromojiAnalyzer({ dictPath: "kuromoji/dict" })
           );
-          _text = await kuroshiro.convert(_text, {
-            mode: "furigana",
-            to: "hiragana",
-          });
-          setText(_text);
+
+          if (stickyWindow.isBreakLine) {
+            let _texts = [];
+            setLongestText(findLongestText(arrayValues));
+
+            arrayValues.forEach(async (arrayValue) => {
+              let _text = await kuroshiro.convert(arrayValue, {
+                mode: "furigana",
+                to: "hiragana",
+              });
+              _texts.push(_text);
+            });
+
+            setTexts(_texts);
+          } else {
+            let _text = `${id}. ` + arrayValues.join(stickyWindow.splitedBy);
+            _text = await kuroshiro.convert(_text, {
+              mode: "furigana",
+              to: "hiragana",
+            });
+            setTexts([_text]);
+          }
         }
       })();
     }
@@ -44,9 +62,22 @@ export default function NextPage() {
     return Math.floor(Math.random() * (max + 1));
   }
 
+  const findLongestText = (array: string[]) => {
+    return array.reduce((longest, current) => {
+      return current.length > longest.length ? current : longest;
+    }, "");
+  };
+
   useEffect(() => {
-    window.resizeTo(text.length * 10, stickyWindow.height);
-  }, [text.length]);
+    if (texts.length === 1) {
+      window.resizeTo(texts[0].length * 10, stickyWindow.height);
+    } else if (texts.length > 1) {
+      window.resizeTo(
+        longestText.length * 10,
+        stickyWindow.height * texts.length
+      );
+    }
+  }, [counter]);
 
   useEffect(() => {
     window.ipc.invoke("stickyWindow.ready", true).then(() => {
@@ -91,10 +122,15 @@ export default function NextPage() {
         onMouseLeave={startInterval}
       >
         <RiDraggable className="draggable" />
-        <span
-          className="pl-2"
-          dangerouslySetInnerHTML={{ __html: text }}
-        ></span>
+        <div>
+          {texts.map((text, i) => (
+            <div
+              key={i}
+              className="pl-2"
+              dangerouslySetInnerHTML={{ __html: text }}
+            ></div>
+          ))}
+        </div>
       </Code>
     </React.Fragment>
   );

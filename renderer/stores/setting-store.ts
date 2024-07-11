@@ -8,6 +8,7 @@ interface SettingType {
     height: number;
     interval: number;
     isRandom: boolean;
+    isBreakLine: boolean;
     splitedBy: string;
   };
 }
@@ -18,6 +19,7 @@ interface SettingStoreType extends SettingType {
   resetSettings: () => void;
   changeInterval: (seconds: number) => void;
   changeIsRandom: (isRandom: boolean) => void;
+  changeIsBreakLine: (isBreakLine: boolean) => void;
   changeSplitedBy: (str: string) => void;
 }
 
@@ -28,6 +30,7 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
     height: null,
     interval: 0,
     isRandom: false,
+    isBreakLine: false,
     splitedBy: "🍠",
   },
   loadSettings: (settings: SettingType) => set(() => ({ ...settings })),
@@ -62,6 +65,15 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
       });
       return {
         stickyWindow: { ...state.stickyWindow, isRandom: isRandom },
+      };
+    }),
+  changeIsBreakLine: (isBreakLine: boolean) =>
+    set((state) => {
+      window.ipc.send("settings.changed", {
+        stickyWindow: { ...state.stickyWindow, isBreakLine: isBreakLine },
+      });
+      return {
+        stickyWindow: { ...state.stickyWindow, isBreakLine: isBreakLine },
       };
     }),
   changeSplitedBy: (str: string) =>
