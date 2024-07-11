@@ -1,10 +1,12 @@
 import { Button, Code, Spacer } from "@nextui-org/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useSettingStore } from "../stores/setting-store";
 import { RiSettings2Fill } from "react-icons/ri";
 import DataTable from "./DataTable";
 import { getListDB } from "./SettingsTab";
 import { useGlobalStore } from "../stores/global-store";
+import { TbBoxAlignBottomRight } from "react-icons/tb";
+import { PiTextTLight, PiTextTSlash } from "react-icons/pi";
 
 export default function HomeTab() {
   const { isShowSticky, toggleShowSticky } = useGlobalStore();
@@ -41,13 +43,24 @@ export default function HomeTab() {
 
       <div className="flex justify-center">
         <Button color="success" onClick={runInSystemTray}>
-          Chạy ẩn dưới khay hệ thống
+          <TbBoxAlignBottomRight />
+          Chạy ẩn
         </Button>
 
         <Spacer x={1} />
 
         <Button color="primary" onClick={toggleShowSticky}>
-          {isShowSticky ? "Ẩn Sticky" : "Hiện Sticky"}
+          {isShowSticky ? (
+            <>
+              <PiTextTSlash />
+              Ẩn Sticky
+            </>
+          ) : (
+            <>
+              <PiTextTLight />
+              Hiện sticky
+            </>
+          )}
         </Button>
       </div>
     </>
