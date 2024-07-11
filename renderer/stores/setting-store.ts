@@ -43,10 +43,16 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
   changeInterval: (seconds: number) =>
     set((state) => {
       window.ipc.send("settings.changed", {
-        stickyWindow: { ...state.stickyWindow, interval: seconds * 1000 },
+        stickyWindow: {
+          ...state.stickyWindow,
+          interval: (seconds || 1) * 1000,
+        },
       });
       return {
-        stickyWindow: { ...state.stickyWindow, interval: seconds * 1000 },
+        stickyWindow: {
+          ...state.stickyWindow,
+          interval: (seconds || 1) * 1000,
+        },
       };
     }),
   changeIsRandom: (isRandom: boolean) =>
