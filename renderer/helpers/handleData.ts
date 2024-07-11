@@ -68,11 +68,10 @@ const readExcelFile = async (dataSet: DataSetType, fields: string[]) => {
     dataObject["id"] = i + 1;
 
     fields.forEach((field, j) => {
-      console.log(field, j);
       if (j === 0) {
         dataObject[field] = "false"; // Default isRemembered = false
       } else {
-        dataObject[field] = row.getCell(j + 2).text;
+        dataObject[field] = row.getCell(j).text;
       }
     });
 
