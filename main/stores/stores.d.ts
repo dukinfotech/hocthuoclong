@@ -8,6 +8,7 @@ declare global {
       height: number;
       interval: number;
       isRandom: boolean;
+      splitedBy: string;
     };
   }
 }

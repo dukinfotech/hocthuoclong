@@ -11,6 +11,7 @@ const settings = new Store<SettingType>({
       height: isProd ? 28 : 600,
       interval: 5000,
       isRandom: false,
+      splitedBy: "🍠",
     },
   },
   watch: true,

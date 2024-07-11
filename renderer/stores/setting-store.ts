@@ -8,6 +8,7 @@ interface SettingType {
     height: number;
     interval: number;
     isRandom: boolean;
+    splitedBy: string;
   };
 }
 
@@ -17,6 +18,7 @@ interface SettingStoreType extends SettingType {
   resetSettings: () => void;
   changeInterval: (seconds: number) => void;
   changeIsRandom: (isRandom: boolean) => void;
+  changeSplitedBy: (str: string) => void;
 }
 
 export const useSettingStore = create<SettingStoreType>((set) => ({
@@ -26,6 +28,7 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
     height: null,
     interval: 0,
     isRandom: false,
+    splitedBy: "🍠",
   },
   loadSettings: (settings: SettingType) => set(() => ({ ...settings })),
   resetSettings: async () => {
@@ -53,6 +56,15 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
       });
       return {
         stickyWindow: { ...state.stickyWindow, isRandom: isRandom },
+      };
+    }),
+  changeSplitedBy: (str: string) =>
+    set((state) => {
+      window.ipc.send("settings.changed", {
+        stickyWindow: { ...state.stickyWindow, splitedBy: str },
+      });
+      return {
+        stickyWindow: { ...state.stickyWindow, splitedBy: str },
       };
     }),
 }));

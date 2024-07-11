@@ -16,7 +16,7 @@ export default function NextPage() {
     if (data.length > 0) {
       const selectedDataObject = data[counter];
       if (selectedDataObject) {
-        _text = Object.values(selectedDataObject).join(" ");
+        _text = Object.values(selectedDataObject).join(stickyWindow.splitedBy);
       }
     }
     return _text;

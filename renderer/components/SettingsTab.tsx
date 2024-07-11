@@ -13,9 +13,8 @@ import CreateDBButton from "./settings/CreateDBButton";
 import { useConfirmPrompt } from "../providers/ConfirmPromptProvider";
 import { useSettingStore } from "../stores/setting-store";
 import { useGlobalStore } from "../stores/global-store";
-import { PiClockCountdown } from "react-icons/pi";
+import { PiClockCountdown, PiSplitHorizontal } from "react-icons/pi";
 import { BsDatabase } from "react-icons/bs";
-import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
 
 export const getListDB = async () => {
   const dbInfo = await window.indexedDB.databases();
@@ -30,13 +29,13 @@ export default function SettingsTab() {
     changeIsRandom,
     changeInterval,
     changeSelectedDB,
+    changeSplitedBy,
     resetSettings,
   } = useSettingStore();
   const [selectedDBKey, setSelectedDBKey] = useState(new Set([selectedDB]));
 
   const { isShowSticky, toggleShowSticky } = useGlobalStore();
   const { show } = useConfirmPrompt();
-  const renderCount = useRef<number>(1);
 
   const updateListDBSelect = () => {
     getListDB().then((dbInfo) => {
@@ -90,6 +89,11 @@ export default function SettingsTab() {
       setSelectedDBKey(new Set([]));
       reloadSticky();
     }
+  };
+
+  const handleChangeSplitedBy = (str: string) => {
+    changeSplitedBy(str);
+    reloadSticky();
   };
 
   return (
@@ -154,6 +158,17 @@ export default function SettingsTab() {
             <p className="text-medium">Xáo trộn các từ</p>
           </div>
         </Switch>
+
+        <Spacer y={2} />
+
+        <Input
+          color="primary"
+          startContent={<PiSplitHorizontal />}
+          label="Ký tự ngăn cách"
+          value={stickyWindow.splitedBy}
+          onValueChange={handleChangeSplitedBy}
+          variant="flat"
+        />
       </div>
     </>
   );
