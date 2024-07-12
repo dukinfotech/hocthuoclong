@@ -7,7 +7,8 @@ export const shuffleArray = (array: Array<any>) => {
 };
 
 export const textContentFromHTML = (html: string) => {
-  var div = document.createElement("div");
-  div.innerHTML = html.trim();
+  const removedRtTagsHTML = html.replaceAll(/<rt>.*?<\/rt>/g, "");
+  const div = document.createElement("div");
+  div.innerHTML = removedRtTagsHTML.trim();
   return div.textContent;
 };

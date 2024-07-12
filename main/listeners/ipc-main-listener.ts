@@ -42,7 +42,7 @@ export default function ipcMainListener(
         closable: true,
         fullscreenable: false,
         maximizable: false,
-        resizable: false,
+        resizable: true,
         webPreferences: {
           preload: path.join(__dirname, "preload.js"),
         },
@@ -60,6 +60,10 @@ export default function ipcMainListener(
     }
 
     return arg;
+  });
+
+  ipcMain.handle("stickyWindow.resize", (event, size) => {
+    stickyWindow.setSize(size.width, size.height, true);
   });
 
   ipcMain.handle("settings.reset", () => {

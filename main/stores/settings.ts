@@ -1,4 +1,10 @@
 import Store from "electron-store";
+import {
+  STICKY_WINDOW_DEFAULT_HEIGHT,
+  STICKY_WINDOW_DEFAULT_WIDTH,
+  WINDOW_DEFAULT_HEIGHT,
+  WINDOW_DEFAULT_WIDTH,
+} from "../../renderer/const";
 
 let isProd = process.env.NODE_ENV === "production";
 
@@ -7,8 +13,8 @@ const settings = new Store<SettingType>({
   defaults: {
     selectedDB: "",
     stickyWindow: {
-      width: isProd ? 300 : 800,
-      height: isProd ? 28 : 600,
+      width: isProd ? STICKY_WINDOW_DEFAULT_WIDTH : WINDOW_DEFAULT_WIDTH,
+      height: isProd ? STICKY_WINDOW_DEFAULT_HEIGHT : WINDOW_DEFAULT_HEIGHT,
       interval: 5000,
       isRandom: false,
       isBreakLine: false,

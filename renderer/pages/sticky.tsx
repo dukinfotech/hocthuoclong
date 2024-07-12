@@ -5,7 +5,7 @@ import { useSettingStore } from "../stores/setting-store";
 import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
-import { REMEMBER_FIELD } from "../const";
+import { REMEMBER_FIELD, STICKY_WINDOW_DEFAULT_HEIGHT } from "../const";
 import { textContentFromHTML } from "../helpers/utils";
 
 export default function NextPage() {
@@ -22,72 +22,28 @@ export default function NextPage() {
 
   const [counter, setCounter] = useState<number>(0);
   const [texts, setTexts] = useState<string[]>([]);
-  const [longestText, setLongestText] = useState<string>("");
   const interval = useRef<any>(0);
 
+  // Convert to furigana
   useEffect(() => {
     if (prettyData.length > 0) {
-      (async () => {
-        const selectedDataObject = prettyData[counter];
-        if (selectedDataObject) {
-          const arrayValues = Object.values(selectedDataObject);
-          const id = arrayValues.shift();
-          arrayValues.shift(); // remove isRemembered
+      const selectedDataObject = prettyData[counter];
 
-          await kuroshiro.init(
-            new KuromojiAnalyzer({ dictPath: "kuromoji/dict" })
-          );
+      if (selectedDataObject) {
+        const arrayValues = Object.values(selectedDataObject);
+        const id = arrayValues.shift();
+        arrayValues.shift(); // remove isRemembered
 
-          if (stickyWindow.isBreakLine) {
-            let _texts = [];
-            setLongestText(findLongestText(arrayValues));
-
-            arrayValues.forEach(async (arrayValue) => {
-              let _text = await kuroshiro.convert(arrayValue, {
-                mode: "furigana",
-                to: "hiragana",
-              });
-              _texts.push(_text);
-            });
-
+        concatValuesToString(id, arrayValues).then((_texts) => {
+          resizeStickyWindow(_texts).then((_texts2) => {
             setTexts(_texts);
-          } else {
-            let _text = `${id}. ` + arrayValues.join(stickyWindow.splitedBy);
-            _text = await kuroshiro.convert(_text, {
-              mode: "furigana",
-              to: "hiragana",
-            });
-            setTexts([_text]);
-          }
-        }
-      })();
+          });
+        });
+      }
     }
   }, [counter, prettyData.length]);
 
-  function randomCounter(max) {
-    return Math.floor(Math.random() * (max + 1));
-  }
-
-  const findLongestText = (array: string[]) => {
-    return array.reduce((longest, current) => {
-      return current.length > longest.length ? current : longest;
-    }, "");
-  };
-
-  useEffect(() => {
-    if (texts.length === 1) {
-      window.resizeTo(
-        textContentFromHTML(texts[0]).length * 10,
-        stickyWindow.height
-      );
-    } else if (texts.length > 1) {
-      window.resizeTo(
-        textContentFromHTML(longestText).length * 10,
-        stickyWindow.height * texts.length
-      );
-    }
-  }, [counter]);
-
+  // Load settings
   useEffect(() => {
     window.ipc.invoke("stickyWindow.ready", true).then(() => {
       window.ipc.on("setting.load", (settings) => {
@@ -96,12 +52,71 @@ export default function NextPage() {
     });
   }, []);
 
+  // Run interval
   useEffect(() => {
     if (prettyData.length > 0) {
       startInterval();
       return () => pauseInterval(); // Cleanup interval on component unmount
     }
   }, [prettyData.length]);
+
+  const concatValuesToString = (id: string, values: string[]) => {
+    return new Promise<string[]>(async (resolve, reject) => {
+      let _texts = [];
+
+      await kuroshiro.init(new KuromojiAnalyzer({ dictPath: "kuromoji/dict" }));
+
+      if (stickyWindow.isBreakLine) {
+        for (const value of values) {
+          let _text = await kuroshiro.convert(value, {
+            mode: "furigana",
+            to: "hiragana",
+          });
+          _texts.push(_text);
+        }
+      } else {
+        let _text = `${id}. ` + values.join(stickyWindow.splitedBy);
+        _text = await kuroshiro.convert(_text, {
+          mode: "furigana",
+          to: "hiragana",
+        });
+        _texts = [_text];
+      }
+
+      resolve(_texts);
+    });
+  };
+
+  const resizeStickyWindow = async (_texts: string[]) => {
+    let width: number = 0;
+    let height: number = 0;
+    let WIDTH_EACH_CHARACTER = 15;
+    let HEIGHT_EACH_ROW = STICKY_WINDOW_DEFAULT_HEIGHT - 5;
+
+    if (_texts.length === 1) {
+      width = textContentFromHTML(_texts[0]).length * WIDTH_EACH_CHARACTER;
+      height = HEIGHT_EACH_ROW;
+    } else if (_texts.length > 1) {
+      const plainTexts = _texts.map((_text) => textContentFromHTML(_text));
+      const maxLengthText = findMaxLengthText(plainTexts);
+      
+      width = maxLengthText.length * WIDTH_EACH_CHARACTER;
+      console.log(maxLengthText, maxLengthText.length)
+      height = HEIGHT_EACH_ROW * _texts.length;
+    }
+
+    await window.ipc.invoke("stickyWindow.resize", { width, height });
+  };
+
+  const randomCounter = (max: number) => {
+    return Math.floor(Math.random() * (max + 1));
+  };
+
+  const findMaxLengthText = (_texts: string[]) => {
+    return _texts.reduce((longest, current) => {
+      return current.length > longest.length ? current : longest;
+    }, "");
+  };
 
   const startInterval = () => {
     console.log("startInterval");
@@ -125,8 +140,11 @@ export default function NextPage() {
   return (
     <React.Fragment>
       <Code
-        color="default"
-        style={{ display: "flex", alignItems: "center" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "transparent",
+        }}
         onMouseEnter={pauseInterval}
         onMouseLeave={startInterval}
       >

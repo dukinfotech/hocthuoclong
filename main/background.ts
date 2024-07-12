@@ -4,6 +4,7 @@ import serve from "electron-serve";
 import { createWindow } from "./helpers";
 import mainWindowListener from "./listeners/main-window-listener";
 import ipcMainListener from "./listeners/ipc-main-listener";
+import { WINDOW_DEFAULT_HEIGHT, WINDOW_DEFAULT_WIDTH } from "../renderer/const";
 
 export const isProd = process.env.NODE_ENV === "production";
 
@@ -20,8 +21,8 @@ let stickyWindow: BrowserWindow;
   await app.whenReady();
 
   mainWindow = createWindow("main", {
-    minWidth: 800,
-    minHeight: 600,
+    minWidth: WINDOW_DEFAULT_WIDTH,
+    minHeight: WINDOW_DEFAULT_HEIGHT,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -37,7 +38,6 @@ let stickyWindow: BrowserWindow;
 
   ipcMainListener(mainWindow, stickyWindow);
   mainWindowListener(mainWindow);
-  
 })();
 
 app.on("window-all-closed", () => {
