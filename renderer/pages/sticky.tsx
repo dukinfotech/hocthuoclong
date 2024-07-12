@@ -60,6 +60,10 @@ export default function NextPage() {
     }
   }, [prettyData.length]);
 
+  useEffect(() => {
+    document.getElementById("__next");
+  }, []);
+
   const concatValuesToString = (id: string, values: string[]) => {
     return new Promise<string[]>(async (resolve, reject) => {
       let _texts = [];
@@ -99,9 +103,9 @@ export default function NextPage() {
     } else if (_texts.length > 1) {
       const plainTexts = _texts.map((_text) => textContentFromHTML(_text));
       const maxLengthText = findMaxLengthText(plainTexts);
-      
+
       width = maxLengthText.length * WIDTH_EACH_CHARACTER;
-      console.log(maxLengthText, maxLengthText.length)
+      console.log(maxLengthText, maxLengthText.length);
       height = HEIGHT_EACH_ROW * _texts.length;
     }
 
@@ -136,6 +140,14 @@ export default function NextPage() {
     console.log("pauseInterval");
     clearInterval(interval.current);
   };
+
+  // Trigger for CSS only this page
+  useEffect(() => {
+    document.getElementsByTagName("body").item(0).classList.add("h-screen");
+    document
+      .getElementById("__next")
+      .classList.add("h-full", "flex", "items-center");
+  }, []);
 
   return (
     <React.Fragment>
