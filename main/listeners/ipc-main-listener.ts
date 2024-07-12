@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, screen } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
 import { createWindow, runInSystemTray } from "../helpers";
 import { settings } from "../stores/settings";
 import path from "path";
@@ -26,14 +26,13 @@ export default function ipcMainListener(
 
   ipcMain.on("stickyWindow.isShow", async (event, arg) => {
     if (arg) {
-      const { width, height } = screen.getPrimaryDisplay().workAreaSize;
       const windowWith = settings.get("stickyWindow.width") as number;
       const windowHeight = settings.get("stickyWindow.height") as number;
 
       stickyWindow = createWindow("sticky", {
         width: windowWith,
         height: windowHeight,
-        x: width - windowWith,
+        x: 0,
         y: 0,
         frame: false,
         transparent: true,
