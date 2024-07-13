@@ -4,7 +4,7 @@ import { useSettingStore } from "../stores/setting-store";
 import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
-import { REMEMBER_FIELD } from "../const";
+import { REMEMBER_FIELD, STICKY_WINDOW_DEFAULT_FONTSIZE } from "../const";
 
 export default function NextPage() {
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
@@ -19,7 +19,6 @@ export default function NextPage() {
   const kuroshiro = new Kuroshiro();
 
   const [counter, setCounter] = useState<number>(0);
-  const [texts, setTexts] = useState<string[]>([]);
   const interval = useRef<any>(0);
 
   // Convert to furigana
@@ -33,9 +32,7 @@ export default function NextPage() {
         arrayValues.shift(); // remove isRemembered
 
         concatValuesToString(id, arrayValues).then((_texts) => {
-          resizeStickyWindow(_texts).then((_texts2) => {
-            setTexts(_texts);
-          });
+          replaceText(_texts);
         });
       }
     }
@@ -89,9 +86,8 @@ export default function NextPage() {
     });
   };
 
-  const resizeStickyWindow = async (_texts: string[]) => {
+  const replaceText = async (_texts: string[]) => {
     const div = document.createElement("div");
-    div.classList.add("px-5");
     div.style.fontSize = `${stickyWindow.fontSize}px`;
 
     if (_texts.length === 1) {
@@ -105,15 +101,21 @@ export default function NextPage() {
     }
 
     const stickyWindowElm = document.getElementById("sticky-window");
-    const draggableStickyElm = document.getElementById("draggable-sticky");
+    const stickyContentElm = document.getElementById("sticky-content");
 
-    stickyWindowElm.appendChild(div);
-    const width = draggableStickyElm.clientWidth + div.clientWidth;
-    const height = stickyWindowElm.clientHeight;
-    console.log(width, div.clientWidth);
-    stickyWindowElm.removeChild(div);
+    if (stickyContentElm.hasChildNodes()) {
+      stickyContentElm.innerHTML = div.outerHTML;
+    } else {
+      stickyContentElm.append(div);
+    }
 
-    await window.ipc.invoke("stickyWindow.resize", { width, height });
+    if (stickyWindow.autoResize) {
+      const width = stickyWindowElm.clientWidth + STICKY_WINDOW_DEFAULT_FONTSIZE;
+      const height = stickyWindowElm.clientHeight;
+      console.log(width, height);
+
+      await window.ipc.invoke("stickyWindow.resize", { width, height });
+    }
   };
 
   const randomCounter = (max: number) => {
@@ -155,12 +157,8 @@ export default function NextPage() {
       onMouseEnter={pauseInterval}
       onMouseLeave={startInterval}
     >
-      <RiDraggable className="draggable" id="draggable-sticky" />
-      <div className="px-5">
-        {texts.map((text, i) => (
-          <div key={i} dangerouslySetInnerHTML={{ __html: text }}></div>
-        ))}
-      </div>
+      <RiDraggable className="draggable mr-2" />
+      <div id="sticky-content"></div>
     </div>
   );
 }

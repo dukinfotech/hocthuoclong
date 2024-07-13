@@ -16,7 +16,10 @@ import { PiClockCountdown, PiSplitHorizontal } from "react-icons/pi";
 import { BsDatabase, BsTrash3 } from "react-icons/bs";
 import { toast } from "react-toastify";
 import useDatabase from "../hooks/useDatabase";
-import { STICKY_WINDOW_DEFAULT_FONTSIZE } from "../const";
+import {
+  STICKY_WINDOW_DEFAULT_FONTSIZE,
+  STICKY_WINDOW_DEFAULT_INTERVAL,
+} from "../const";
 import { RiFontSize2 } from "react-icons/ri";
 
 export default function SettingsTab() {
@@ -25,6 +28,7 @@ export default function SettingsTab() {
     selectedDB,
     stickyWindow,
     changeIsBreakLine,
+    changeAutoResize,
     changeIsRandom,
     changeFontSize,
     changeInterval,
@@ -59,12 +63,25 @@ export default function SettingsTab() {
   }, [selectedDBKey]);
 
   const handleChangeFontSize = (size) => {
-    changeFontSize(size || STICKY_WINDOW_DEFAULT_FONTSIZE);
+    changeFontSize(
+      size < STICKY_WINDOW_DEFAULT_FONTSIZE
+        ? STICKY_WINDOW_DEFAULT_FONTSIZE
+        : size
+    );
     reloadSticky();
   };
 
-  const handleChangeInterval = (value) => {
-    changeInterval(parseInt(value) || 1);
+  const handleChangeInterval = (interval) => {
+    changeInterval(
+      interval < Math.floor(STICKY_WINDOW_DEFAULT_INTERVAL / 1000)
+        ? Math.floor(STICKY_WINDOW_DEFAULT_INTERVAL / 1000)
+        : interval
+    );
+    reloadSticky();
+  };
+
+  const handleChangeAutoResize = (autoResize: boolean) => {
+    changeAutoResize(autoResize);
     reloadSticky();
   };
 
@@ -182,11 +199,24 @@ export default function SettingsTab() {
           startContent={<PiClockCountdown />}
           label="Thời gian trễ mỗi từ (giây)"
           type="number"
-          min={1}
+          min={Math.floor(STICKY_WINDOW_DEFAULT_INTERVAL / 1000)}
           value={Math.floor(stickyWindow.interval / 1000).toString()}
           onValueChange={handleChangeInterval}
           variant="flat"
         />
+
+        <Spacer y={2} />
+
+        <Switch
+          color="primary"
+          size="md"
+          isSelected={stickyWindow.autoResize}
+          onValueChange={handleChangeAutoResize}
+        >
+          <div className="flex flex-col gap-1">
+            <p className="text-medium">Tự động điều chỉnh kích cỡ sticky</p>
+          </div>
+        </Switch>
 
         <Spacer y={2} />
 
