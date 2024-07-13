@@ -21,7 +21,7 @@ export default function HomePage() {
   return (
     <div className="bg-gray-200 h-screen p-10 mx-auto">
       <Head>
-        <title>Học Thuộc Lòng</title>
+        <title>Học Thuộc Lòng v1.0</title>
         <link rel="shortcut icon" href={APP_LOGO} type="image/x-icon" />
       </Head>
       <Tabs aria-label="Options" color="primary" variant="solid">
