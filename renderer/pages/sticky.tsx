@@ -1,4 +1,3 @@
-import { Code } from "@nextui-org/react";
 import { RiDraggable } from "react-icons/ri";
 import React, { useEffect, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
@@ -150,27 +149,21 @@ export default function NextPage() {
   }, []);
 
   return (
-    <React.Fragment>
-      <Code
-        style={{
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "transparent",
-        }}
-        onMouseEnter={pauseInterval}
-        onMouseLeave={startInterval}
-      >
-        <RiDraggable className="draggable" />
-        <div>
-          {texts.map((text, i) => (
-            <div
-              key={i}
-              className="pl-2"
-              dangerouslySetInnerHTML={{ __html: text }}
-            ></div>
-          ))}
-        </div>
-      </Code>
-    </React.Fragment>
+    <div
+      className={`text-[${stickyWindow.fontSize}px] flex items-center`}
+      onMouseEnter={pauseInterval}
+      onMouseLeave={startInterval}
+    >
+      <RiDraggable className="draggable" />
+      <div>
+        {texts.map((text, i) => (
+          <div
+            key={i}
+            className="pl-2"
+            dangerouslySetInnerHTML={{ __html: text }}
+          ></div>
+        ))}
+      </div>
+    </div>
   );
 }

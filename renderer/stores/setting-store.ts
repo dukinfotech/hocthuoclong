@@ -6,6 +6,7 @@ interface SettingType {
   stickyWindow: {
     width: number;
     height: number;
+    fontSize: number;
     interval: number;
     isRandom: boolean;
     isBreakLine: boolean;
@@ -17,6 +18,7 @@ interface SettingStoreType extends SettingType {
   changeSelectedDB: (db: string) => void;
   loadSettings: (settings: unknown) => void;
   resetSettings: () => void;
+  changeFontSize: (size: number) => void;
   changeInterval: (seconds: number) => void;
   changeIsRandom: (isRandom: boolean) => void;
   changeIsBreakLine: (isBreakLine: boolean) => void;
@@ -28,6 +30,7 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
   stickyWindow: {
     width: null,
     height: null,
+    fontSize: 0,
     interval: 0,
     isRandom: false,
     isBreakLine: false,
@@ -42,6 +45,21 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
     set((state) => {
       window.ipc.send("settings.changed", { selectedDB: dbName });
       return { selectedDB: dbName };
+    }),
+  changeFontSize: (size: number) =>
+    set((state) => {
+      window.ipc.send("settings.changed", {
+        stickyWindow: {
+          ...state.stickyWindow,
+          fontSize: size,
+        },
+      });
+      return {
+        stickyWindow: {
+          ...state.stickyWindow,
+          fontSize: size,
+        },
+      };
     }),
   changeInterval: (seconds: number) =>
     set((state) => {

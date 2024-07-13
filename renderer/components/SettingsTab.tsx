@@ -16,6 +16,8 @@ import { PiClockCountdown, PiSplitHorizontal } from "react-icons/pi";
 import { BsDatabase, BsTrash3 } from "react-icons/bs";
 import { toast } from "react-toastify";
 import useDatabase from "../hooks/useDatabase";
+import { STICKY_WINDOW_DEFAULT_FONTSIZE } from "../const";
+import { RiFontSize2 } from "react-icons/ri";
 
 export default function SettingsTab() {
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
@@ -24,6 +26,7 @@ export default function SettingsTab() {
     stickyWindow,
     changeIsBreakLine,
     changeIsRandom,
+    changeFontSize,
     changeInterval,
     changeSelectedDB,
     changeSplitedBy,
@@ -54,6 +57,11 @@ export default function SettingsTab() {
       reloadSticky();
     }
   }, [selectedDBKey]);
+
+  const handleChangeFontSize = (size) => {
+    changeFontSize(size || STICKY_WINDOW_DEFAULT_FONTSIZE);
+    reloadSticky();
+  };
 
   const handleChangeInterval = (value) => {
     changeInterval(parseInt(value) || 1);
@@ -151,6 +159,20 @@ export default function SettingsTab() {
           <Spacer x={1} />
           <CreateDBButton onClose={updateListDB} />
         </div>
+
+        <Spacer y={2} />
+
+        <Input
+          isRequired
+          color="primary"
+          startContent={<RiFontSize2 />}
+          label="Kích cỡ chữ (px)"
+          type="number"
+          min={STICKY_WINDOW_DEFAULT_FONTSIZE}
+          value={stickyWindow.fontSize.toString()}
+          onValueChange={handleChangeFontSize}
+          variant="flat"
+        />
 
         <Spacer y={2} />
 
