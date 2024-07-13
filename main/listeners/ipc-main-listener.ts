@@ -3,6 +3,7 @@ import { createWindow, runInSystemTray } from "../helpers";
 import { settings } from "../stores/settings";
 import path from "path";
 import { isProd } from "../background";
+import stickyWindowListener from "./sticky-window-listener";
 
 export default function ipcMainListener(
   mainWindow: BrowserWindow,
@@ -54,6 +55,8 @@ export default function ipcMainListener(
         await stickyWindow.loadURL(`http://localhost:${port}/sticky`);
         stickyWindow.webContents.openDevTools();
       }
+
+      stickyWindowListener(mainWindow, stickyWindow);
     } else {
       stickyWindow.close();
     }
