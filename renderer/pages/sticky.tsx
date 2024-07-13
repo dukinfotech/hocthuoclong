@@ -4,8 +4,7 @@ import { useSettingStore } from "../stores/setting-store";
 import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
-import { REMEMBER_FIELD, STICKY_WINDOW_DEFAULT_HEIGHT } from "../const";
-import { textContentFromHTML } from "../helpers/utils";
+import { REMEMBER_FIELD } from "../const";
 
 export default function NextPage() {
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
@@ -91,34 +90,34 @@ export default function NextPage() {
   };
 
   const resizeStickyWindow = async (_texts: string[]) => {
-    let width: number = 0;
-    let height: number = 0;
-    let WIDTH_EACH_CHARACTER = 15;
-    let HEIGHT_EACH_ROW = STICKY_WINDOW_DEFAULT_HEIGHT - 5;
+    const div = document.createElement("div");
+    div.classList.add("px-5");
+    div.style.fontSize = `${stickyWindow.fontSize}px`;
 
     if (_texts.length === 1) {
-      width = textContentFromHTML(_texts[0]).length * WIDTH_EACH_CHARACTER;
-      height = HEIGHT_EACH_ROW;
+      div.innerHTML = _texts[0];
     } else if (_texts.length > 1) {
-      const plainTexts = _texts.map((_text) => textContentFromHTML(_text));
-      const maxLengthText = findMaxLengthText(plainTexts);
-
-      width = maxLengthText.length * WIDTH_EACH_CHARACTER;
-      console.log(maxLengthText, maxLengthText.length);
-      height = HEIGHT_EACH_ROW * _texts.length;
+      _texts.forEach((_text) => {
+        const _div = document.createElement("div");
+        _div.innerHTML = _text;
+        div.appendChild(_div);
+      });
     }
+
+    const stickyWindowElm = document.getElementById("sticky-window");
+    const draggableStickyElm = document.getElementById("draggable-sticky");
+
+    stickyWindowElm.appendChild(div);
+    const width = draggableStickyElm.clientWidth + div.clientWidth;
+    const height = stickyWindowElm.clientHeight;
+    console.log(width, div.clientWidth);
+    stickyWindowElm.removeChild(div);
 
     await window.ipc.invoke("stickyWindow.resize", { width, height });
   };
 
   const randomCounter = (max: number) => {
     return Math.floor(Math.random() * (max + 1));
-  };
-
-  const findMaxLengthText = (_texts: string[]) => {
-    return _texts.reduce((longest, current) => {
-      return current.length > longest.length ? current : longest;
-    }, "");
   };
 
   const startInterval = () => {
@@ -150,18 +149,16 @@ export default function NextPage() {
 
   return (
     <div
-      className={`text-[${stickyWindow.fontSize}px] flex items-center`}
+      id="sticky-window"
+      className="flex items-center"
+      style={{ whiteSpace: "nowrap", fontSize: `${stickyWindow.fontSize}px` }}
       onMouseEnter={pauseInterval}
       onMouseLeave={startInterval}
     >
-      <RiDraggable className="draggable" />
-      <div>
+      <RiDraggable className="draggable" id="draggable-sticky" />
+      <div className="px-5">
         {texts.map((text, i) => (
-          <div
-            key={i}
-            className="pl-2"
-            dangerouslySetInnerHTML={{ __html: text }}
-          ></div>
+          <div key={i} dangerouslySetInnerHTML={{ __html: text }}></div>
         ))}
       </div>
     </div>
