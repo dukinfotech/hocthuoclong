@@ -23,6 +23,7 @@ let stickyWindow: BrowserWindow;
   mainWindow = createWindow("main", {
     minWidth: WINDOW_DEFAULT_WIDTH,
     minHeight: WINDOW_DEFAULT_HEIGHT,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
