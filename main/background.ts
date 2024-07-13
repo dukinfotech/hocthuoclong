@@ -44,3 +44,7 @@ let stickyWindow: BrowserWindow;
 app.on("window-all-closed", () => {
   app.quit();
 });
+
+app.setLoginItemSettings({
+  openAtLogin: true    
+})
