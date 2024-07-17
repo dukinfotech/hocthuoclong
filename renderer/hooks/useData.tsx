@@ -6,24 +6,31 @@ const useData = (dbName: string) => {
 
   useEffect(() => {
     if (!dbName) return;
-    
+
     (async () => {
-      const db = (await openDatabase()) as IDBDatabase;
-      // Open transaction to access object store
-      const transaction = db.transaction(DATA_OBJECT_STORE_NAME, "readonly");
-      const objectStore = transaction.objectStore(DATA_OBJECT_STORE_NAME);
+      try {
+        const db = (await openDatabase()) as IDBDatabase;
+        // Open transaction to access object store
+        const transaction = db.transaction(DATA_OBJECT_STORE_NAME, "readonly");
+        const objectStore = transaction.objectStore(DATA_OBJECT_STORE_NAME);
 
-      // Get all data from object store
-      const getAllRequest = objectStore.getAll();
+        // Get all data from object store
+        const getAllRequest = objectStore.getAll();
 
-      getAllRequest.onsuccess = function (event) {
-        const result: any = (event.target as IDBOpenDBRequest).result;
-        setData(result);
-      };
+        getAllRequest.onsuccess = function (event) {
+          const result: any = (event.target as IDBOpenDBRequest).result;
+          setData(result);
+        };
 
-      getAllRequest.onerror = function (event: any) {
-        console.error("Error getting data from IndexedDB:", event.target.error);
-      };
+        getAllRequest.onerror = function (event: any) {
+          console.error(
+            "Error getting data from IndexedDB:",
+            event.target.error
+          );
+        };
+      } catch (error) {
+        console.error(error);
+      }
     })();
   }, [dbName]);
 

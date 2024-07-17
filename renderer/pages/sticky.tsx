@@ -1,5 +1,5 @@
 import { RiDraggable } from "react-icons/ri";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
 import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
@@ -11,7 +11,7 @@ import {
 } from "../const";
 
 export default function NextPage() {
-  const [shownColumns, setShownColumns] = useState<number[]>([]);
+  const [shownColumns, setShownColumns] = useState<number[]>();
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
 
   // Fetch data from database
@@ -27,9 +27,10 @@ export default function NextPage() {
   const interval = useRef<any>(0);
 
   useEffect(() => {
-    const _shownColumns: number[] =
-      JSON.parse(localStorage.getItem(SHOWN_COLUMNS)) || [];
-    if (_shownColumns.length > 0) {
+    let _shownColumns: number[] | undefined = undefined;
+    try {
+      _shownColumns = JSON.parse(localStorage.getItem(SHOWN_COLUMNS));
+    } finally {
       setShownColumns(_shownColumns);
     }
   }, []);
@@ -43,9 +44,11 @@ export default function NextPage() {
         let arrayValues = Object.values(selectedDataObject);
         const id = arrayValues[0];
 
-        arrayValues = arrayValues.filter((arrayValue, i) => {
-          return shownColumns.includes(i - 1);
-        });
+        if (shownColumns) {
+          arrayValues = arrayValues.filter((arrayValue, i) => {
+            return shownColumns.includes(i - 1);
+          });
+        }
 
         concatValuesToString(id, arrayValues).then((_texts) => {
           replaceText(_texts);
