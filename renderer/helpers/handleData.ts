@@ -92,34 +92,61 @@ function readFile(file: File) {
 }
 
 const convertCellToHTML = (cell: Excel.Cell) => {
-  let html = "<span";
-  if (cell.style) {
-    const styleString = styleToCSS(cell.style);
-    if (styleString) {
-      html += ` style="${styleString.trim()}"`;
-    }
-  }
+  let html = "";
+  const cellValue = cell.value;
 
-  html += ">";
-  html += cell.text;
-  html += "</span>";
+  if (isCellRichTextValue(cellValue)) {
+    const richText = cellValue.richText;
+
+    richText.forEach((_text) => {
+      let _html = "<span";
+      if (_text.font) {
+        const cssString = fontStylesToCSS(_text.font);
+        if (cssString) {
+          _html += ` style="${cssString.trim()}"`;
+        }
+      }
+      _html += ">";
+      _html += _text.text.replaceAll("\n", "<br/>");
+      _html += "</span>";
+
+      html += _html;
+    });
+  } else {
+    let _html = "<span";
+    if (cell.font) {
+      const cssString = fontStylesToCSS(cell.font);
+      if (cssString) {
+        _html += ` style="${cssString.trim()}"`;
+      }
+    }
+    _html += ">";
+    _html += cell.text.replaceAll("\n", "<br/>");
+    _html += "</span>";
+
+    html += _html;
+  }
 
   return html;
 };
 
-const styleToCSS = (cellStyle: Partial<Excel.Style>) => {
-  let styleString = "";
+const fontStylesToCSS = (fontStyle: Partial<Excel.Font>) => {
+  let cssString = "";
 
-  if (cellStyle.font) {
-    if (cellStyle.font.bold) styleString += "font-weight: bold; ";
-    if (cellStyle.font.italic) styleString += "font-style: italic; ";
-    if (cellStyle.font.size)
-      styleString += `font-size: ${cellStyle.font.size}pt; `;
-    if (cellStyle.font.color && cellStyle.font.color.argb)
-      styleString += `color: #${cellStyle.font.color.argb.slice(2)}; `;
-  }
+  if (fontStyle.bold) cssString += "font-weight: bold; ";
+  if (fontStyle.italic) cssString += "font-style: italic; ";
+  if (fontStyle.size) cssString += `font-size: ${fontStyle.size}pt; `;
+  if (fontStyle.color && fontStyle.color.argb)
+    cssString += `color: #${fontStyle.color.argb.slice(2)}; `;
 
-  return styleString;
+  return cssString;
+};
+
+// Define type guard
+const isCellRichTextValue = (
+  value: Excel.CellValue
+): value is Excel.CellRichTextValue => {
+  return (value as Excel.CellRichTextValue).richText !== undefined;
 };
 
 export { loadDataToDB };
