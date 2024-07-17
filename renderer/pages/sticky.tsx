@@ -95,7 +95,7 @@ export default function NextPage() {
     } else if (_texts.length > 1) {
       _texts.forEach((_text) => {
         const _div = document.createElement("div");
-        _div.innerHTML = _text;
+        _div.innerHTML = _text + "<hr/>";
         div.appendChild(_div);
       });
     }
