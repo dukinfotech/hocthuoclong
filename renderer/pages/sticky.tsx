@@ -170,7 +170,11 @@ export default function NextPage() {
     <div
       id="sticky-window"
       className="flex items-center"
-      style={{ whiteSpace: "nowrap", fontSize: `${stickyWindow.fontSize}px` }}
+      style={{
+        whiteSpace: "nowrap",
+        fontSize: `${stickyWindow.fontSize}px`,
+        backgroundColor: stickyWindow.bgColor,
+      }}
       onMouseEnter={pauseInterval}
       onMouseLeave={startInterval}
     >

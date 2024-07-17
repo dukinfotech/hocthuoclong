@@ -12,6 +12,7 @@ declare global {
       isRandom: boolean;
       isBreakLine: boolean;
       splitedBy: string;
+      bgColor: string;
     };
   }
 }

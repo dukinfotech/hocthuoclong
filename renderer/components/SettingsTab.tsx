@@ -21,6 +21,7 @@ import {
   STICKY_WINDOW_DEFAULT_INTERVAL,
 } from "../const";
 import { RiFontSize2 } from "react-icons/ri";
+import BgColorPicker from "./settings/BgColorPicker";
 
 export default function SettingsTab() {
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
@@ -34,6 +35,7 @@ export default function SettingsTab() {
     changeInterval,
     changeSelectedDB,
     changeSplitedBy,
+    changeBgColor,
     resetSettings,
   } = useSettingStore();
   const [selectedDBKey, setSelectedDBKey] = useState(new Set([selectedDB]));
@@ -126,6 +128,11 @@ export default function SettingsTab() {
       updateListDB();
       toast.success(`Đã xoá bộ dữ liệu: ${dbName}`);
     }
+  };
+
+  const handleChangeBgColor = (color: string) => {
+    changeBgColor(color);
+    reloadSticky();
   };
 
   return (
@@ -256,6 +263,13 @@ export default function SettingsTab() {
             variant="flat"
           />
         )}
+
+        <Spacer y={2} />
+
+        <BgColorPicker
+          bgColor={stickyWindow.bgColor}
+          onChange={handleChangeBgColor}
+        />
       </div>
     </>
   );

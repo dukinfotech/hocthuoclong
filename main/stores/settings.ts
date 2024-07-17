@@ -23,6 +23,7 @@ const settings = new Store<SettingType>({
       isRandom: false,
       isBreakLine: false,
       splitedBy: "🍠",
+      bgColor: "#FFFFFF",
     },
   },
   watch: true,

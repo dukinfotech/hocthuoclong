@@ -8,7 +8,6 @@
   "scripts": {
     "dev": "nextron",
     "build": "nextron build",
-    "build": "nextron build",
     "build:mac": "nextron build --mac",
     "build:mac:universal": "nextron build --mac --universal",
     "build:linux": "nextron build --linux",
@@ -24,6 +23,7 @@
     "framer-motion": "^11.2.13",
     "kuroshiro": "^1.2.0",
     "kuroshiro-analyzer-kuromoji": "^1.1.0",
+    "react-color": "^2.19.3",
     "react-icons": "^5.2.1",
     "react-toastify": "^10.0.5",
     "zustand": "^4.5.4"
@@ -31,6 +31,7 @@
   "devDependencies": {
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.52",
+    "@types/react-color": "^3.0.12",
     "autoprefixer": "^10.4.19",
     "electron": "^31.0.1",
     "electron-builder": "^24.13.3",

@@ -6,7 +6,7 @@ export const REMEMBER_FIELD = "isRemembered";
 export const SHOWN_COLUMNS = "shown_columns";
 
 export const WINDOW_DEFAULT_WIDTH = 800;
-export const WINDOW_DEFAULT_HEIGHT = 600;
+export const WINDOW_DEFAULT_HEIGHT = 800;
 
 export const STICKY_WINDOW_DEFAULT_WIDTH = 300;
 export const STICKY_WINDOW_DEFAULT_HEIGHT = 34;

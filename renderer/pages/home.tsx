@@ -24,7 +24,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="bg-gray-200 h-screen p-10 mx-auto">
+    <div className="bg-gray-200 min-h-screen p-10 mx-auto">
       <Head>
         <title>Học Thuộc Lòng v1.0</title>
       </Head>
