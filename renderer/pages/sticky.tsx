@@ -1,12 +1,17 @@
 import { RiDraggable } from "react-icons/ri";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
 import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
-import { REMEMBER_FIELD, STICKY_WINDOW_DEFAULT_FONTSIZE } from "../const";
+import {
+  REMEMBER_FIELD,
+  SHOWN_COLUMNS,
+  STICKY_WINDOW_DEFAULT_FONTSIZE,
+} from "../const";
 
 export default function NextPage() {
+  const [shownColumns, setShownColumns] = useState<number[]>([]);
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
 
   // Fetch data from database
@@ -21,15 +26,26 @@ export default function NextPage() {
   const [counter, setCounter] = useState<number>(0);
   const interval = useRef<any>(0);
 
+  useEffect(() => {
+    const _shownColumns: number[] =
+      JSON.parse(localStorage.getItem(SHOWN_COLUMNS)) || [];
+    if (_shownColumns.length > 0) {
+      setShownColumns(_shownColumns);
+    }
+  }, []);
+
   // Convert to furigana
   useEffect(() => {
     if (prettyData.length > 0) {
       const selectedDataObject = prettyData[counter];
 
       if (selectedDataObject) {
-        const arrayValues = Object.values(selectedDataObject);
-        const id = arrayValues.shift();
-        arrayValues.shift(); // remove isRemembered
+        let arrayValues = Object.values(selectedDataObject);
+        const id = arrayValues[0];
+
+        arrayValues = arrayValues.filter((arrayValue, i) => {
+          return shownColumns.includes(i - 1);
+        });
 
         concatValuesToString(id, arrayValues).then((_texts) => {
           replaceText(_texts);
@@ -110,7 +126,8 @@ export default function NextPage() {
     }
 
     if (stickyWindow.autoResize) {
-      const width = stickyWindowElm.clientWidth + STICKY_WINDOW_DEFAULT_FONTSIZE;
+      const width =
+        stickyWindowElm.clientWidth + STICKY_WINDOW_DEFAULT_FONTSIZE;
       const height = stickyWindowElm.clientHeight;
       console.log(width, height);
 

@@ -11,9 +11,10 @@ import {
 } from "@nextui-org/react";
 import useData from "../hooks/useData";
 import { useSettingStore } from "../stores/setting-store";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { REMEMBER_FIELD } from "../const";
+import { useEffect, useMemo, useState } from "react";
+import { REMEMBER_FIELD, SHOWN_COLUMNS } from "../const";
 import { textContentFromHTML } from "../helpers/utils";
+import { useGlobalStore } from "../stores/global-store";
 
 type ColumnNameType = {
   key: string;
@@ -22,6 +23,7 @@ type ColumnNameType = {
 
 export default function DataTable() {
   const selectedDB = useSettingStore((state) => state.selectedDB);
+  const { isShowSticky, toggleShowSticky } = useGlobalStore();
   const { data, update } = useData(selectedDB);
   const [keyword, setKeyword] = useState<string>("");
 
@@ -76,9 +78,47 @@ export default function DataTable() {
     });
   }, [data, keyword]);
 
+  // Shown columns
+  useEffect(() => {
+    let shownColumns: number[] = [];
+    if (data.length > 0) {
+      const firstDataObject = data[0];
+      Object.keys(firstDataObject).forEach((key, i) => {
+        // Skip id, isRemembered
+        if (i > 1) {
+          shownColumns.push(i - 1);
+        }
+      });
+    }
+    localStorage.setItem(SHOWN_COLUMNS, JSON.stringify(shownColumns));
+  }, [data]);
+
   const toggleRemember = (key: string, e: any) => {
     console.log(key);
     update(key, REMEMBER_FIELD, e.target.checked.toString());
+  };
+
+  const handleToggleShowInSticky = (i: number, isShow: boolean) => {
+    let shownColumns: number[] =
+      JSON.parse(localStorage.getItem(SHOWN_COLUMNS)) || [];
+    if (isShow) {
+      if (!shownColumns.includes(i)) {
+        shownColumns.push(i);
+      }
+    } else {
+      if (shownColumns.includes(i)) {
+        shownColumns = shownColumns.filter((shownColumn) => shownColumn !== i);
+      }
+    }
+    localStorage.setItem(SHOWN_COLUMNS, JSON.stringify(shownColumns));
+    reloadSticky();
+  };
+
+  const reloadSticky = () => {
+    if (isShowSticky) {
+      toggleShowSticky();
+      toggleShowSticky();
+    }
   };
 
   return (
@@ -100,8 +140,23 @@ export default function DataTable() {
         }}
       >
         <TableHeader>
-          {columnNames.map((columnName) => (
-            <TableColumn key={columnName.key}>{columnName.name}</TableColumn>
+          {columnNames.map((columnName, i) => (
+            <TableColumn key={columnName.key}>
+              <>
+                {columnName.name}
+                {i > 1 && (
+                  <Checkbox
+                    key={i}
+                    className="ml-1"
+                    title="Hiển thị trên sticky"
+                    defaultSelected
+                    onChange={(e) =>
+                      handleToggleShowInSticky(i - 1, e.target.checked)
+                    }
+                  />
+                )}
+              </>
+            </TableColumn>
           ))}
         </TableHeader>
         <TableBody emptyContent="Không có dữ liệu">

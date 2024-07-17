@@ -3,6 +3,7 @@ export const APP_LOGO = "icon.ico";
 
 export const DATA_OBJECT_STORE_NAME = "data";
 export const REMEMBER_FIELD = "isRemembered";
+export const SHOWN_COLUMNS = "shown_columns";
 
 export const WINDOW_DEFAULT_WIDTH = 800;
 export const WINDOW_DEFAULT_HEIGHT = 600;
