@@ -44,6 +44,7 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
   },
   loadSettings: (settings: SettingType) => set(() => ({ ...settings })),
   resetSettings: async () => {
+    localStorage.clear();
     const settings = await window.ipc.invoke("settings.reset");
     return set(() => ({ ...settings }));
   },
