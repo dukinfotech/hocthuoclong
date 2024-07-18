@@ -82,7 +82,7 @@ export default function NextPage() {
     return new Promise<string[]>(async (resolve, reject) => {
       let _texts = [];
 
-      await kuroshiro.init(new KuromojiAnalyzer({ dictPath: "kuromoji/dict" }));
+      await kuroshiro.init(new KuromojiAnalyzer({ dictPath: "/sticky/kuromoji/dict" }));
 
       if (stickyWindow.isBreakLine) {
         for (const value of values) {
