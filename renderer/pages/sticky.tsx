@@ -163,11 +163,17 @@ export default function NextPage() {
 
   // Trigger for CSS only this page
   useEffect(() => {
-    document.getElementsByTagName("body").item(0).classList.add("h-screen");
-    document
-      .getElementById("__next")
-      .classList.add("h-full", "flex", "items-center");
-  }, []);
+    if (stickyWindow.fontSize > 0) {
+      // Trigger for detect settings loaded
+      const bodyTag = document.getElementsByTagName("body").item(0);
+      bodyTag.style.backgroundColor = stickyWindow.bgColor;
+      bodyTag.classList.add("h-screen", "w-screen");
+
+      document
+        .getElementById("__next")
+        .classList.add("h-full", "flex", "items-center");
+    }
+  }, [stickyWindow]);
 
   return (
     <div
@@ -176,7 +182,6 @@ export default function NextPage() {
       style={{
         whiteSpace: "nowrap",
         fontSize: `${stickyWindow.fontSize}px`,
-        backgroundColor: stickyWindow.bgColor,
       }}
       onMouseEnter={pauseInterval}
       onMouseLeave={startInterval}

@@ -36,10 +36,7 @@ export default function ipcMainListener(
         x: 0,
         y: 0,
         frame: false,
-        transparent: true,
         alwaysOnTop: true,
-        focusable: false, //THIS IS THE KEY
-        closable: true,
         fullscreenable: false,
         maximizable: false,
         resizable: true,
