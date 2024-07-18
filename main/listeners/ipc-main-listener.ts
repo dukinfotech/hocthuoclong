@@ -39,6 +39,7 @@ export default function ipcMainListener(
         alwaysOnTop: true,
         fullscreenable: false,
         maximizable: false,
+        minimizable: false,
         resizable: true,
         webPreferences: {
           preload: path.join(__dirname, "preload.js"),
