@@ -64,18 +64,25 @@ const readExcelFile = async (dataSet: DataSetType, fields: string[]) => {
   const data = [];
 
   rows.forEach((row, i) => {
-    let dataObject = {};
-    dataObject["id"] = i + 1;
+    try {
+      // Skip error rows
+      let dataObject = {};
+      dataObject["id"] = i + 1;
 
-    fields.forEach((field, j) => {
-      if (j === 0) {
-        dataObject[field] = "false"; // Default isRemembered = false
-      } else {
-        dataObject[field] = convertCellToHTML(row.getCell(j));
-      }
-    });
+      fields.forEach((field, j) => {
+        if (j === 0) {
+          dataObject[field] = "false"; // Default isRemembered = false
+        } else {
+          dataObject[field] = row.getCell(j).value
+            ? convertCellToHTML(row.getCell(j))
+            : "";
+        }
+      });
 
-    data.push(dataObject);
+      data.push(dataObject);
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   return data;
