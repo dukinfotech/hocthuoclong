@@ -82,22 +82,31 @@ export default function NextPage() {
     return new Promise<string[]>(async (resolve, reject) => {
       let _texts = [];
 
-      await kuroshiro.init(new KuromojiAnalyzer({ dictPath: "/sticky/kuromoji/dict" }));
-
       if (stickyWindow.isBreakLine) {
         for (const value of values) {
-          let _text = await kuroshiro.convert(value, {
-            mode: "furigana",
-            to: "hiragana",
-          });
+          let _text = value;
+          if (stickyWindow.isFurigana) {
+            await kuroshiro.init(
+              new KuromojiAnalyzer({ dictPath: "/sticky/kuromoji/dict" })
+            );
+            _text = await kuroshiro.convert(value, {
+              mode: "furigana",
+              to: "hiragana",
+            });
+          }
           _texts.push(_text);
         }
       } else {
         let _text = `${id}. ` + values.join(stickyWindow.splitedBy);
-        _text = await kuroshiro.convert(_text, {
-          mode: "furigana",
-          to: "hiragana",
-        });
+        if (stickyWindow.isFurigana) {
+          await kuroshiro.init(
+            new KuromojiAnalyzer({ dictPath: "/sticky/kuromoji/dict" })
+          );
+          _text = await kuroshiro.convert(_text, {
+            mode: "furigana",
+            to: "hiragana",
+          });
+        }
         _texts = [_text];
       }
 

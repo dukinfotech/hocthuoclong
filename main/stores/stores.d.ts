@@ -13,6 +13,7 @@ declare global {
       isBreakLine: boolean;
       splitedBy: string;
       bgColor: string;
+      isFurigana: boolean;
     };
   }
 }

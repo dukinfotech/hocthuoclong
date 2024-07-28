@@ -13,6 +13,7 @@ interface SettingType {
     isBreakLine: boolean;
     splitedBy: string;
     bgColor: string;
+    isFurigana: boolean;
   };
 }
 
@@ -25,6 +26,7 @@ interface SettingStoreType extends SettingType {
   changeInterval: (seconds: number) => void;
   changeIsRandom: (isRandom: boolean) => void;
   changeIsBreakLine: (isBreakLine: boolean) => void;
+  changeIsFurigana: (isFurigana: boolean) => void;
   changeSplitedBy: (str: string) => void;
   changeBgColor: (color: string) => void;
 }
@@ -41,6 +43,7 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
     isBreakLine: false,
     splitedBy: "🍠",
     bgColor: "#FFFFFF",
+    isFurigana: false,
   },
   loadSettings: (settings: SettingType) => set(() => ({ ...settings })),
   resetSettings: async () => {
@@ -108,6 +111,15 @@ export const useSettingStore = create<SettingStoreType>((set) => ({
       });
       return {
         stickyWindow: { ...state.stickyWindow, isBreakLine: isBreakLine },
+      };
+    }),
+  changeIsFurigana: (isFurigana: boolean) =>
+    set((state) => {
+      window.ipc.send("settings.changed", {
+        stickyWindow: { ...state.stickyWindow, isFurigana: isFurigana },
+      });
+      return {
+        stickyWindow: { ...state.stickyWindow, isFurigana: isFurigana },
       };
     }),
   changeSplitedBy: (str: string) =>

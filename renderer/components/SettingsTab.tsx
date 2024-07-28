@@ -35,6 +35,7 @@ export default function SettingsTab() {
     changeInterval,
     changeSelectedDB,
     changeSplitedBy,
+    changeIsFurigana,
     changeBgColor,
     resetSettings,
   } = useSettingStore();
@@ -94,6 +95,11 @@ export default function SettingsTab() {
 
   const handleChangeIsBreakLine = (isBreakLine: boolean) => {
     changeIsBreakLine(isBreakLine);
+    reloadSticky();
+  };
+
+  const handleChangeIsFurigana = (isFurigana: boolean) => {
+    changeIsFurigana(isFurigana);
     reloadSticky();
   };
 
@@ -235,6 +241,19 @@ export default function SettingsTab() {
         >
           <div className="flex flex-col gap-1">
             <p className="text-medium">Xáo trộn các từ</p>
+          </div>
+        </Switch>
+
+        <Spacer y={2} />
+
+        <Switch
+          color="primary"
+          size="md"
+          isSelected={stickyWindow.isFurigana}
+          onValueChange={handleChangeIsFurigana}
+        >
+          <div className="flex flex-col gap-1">
+            <p className="text-medium">Hiển thị Furigana</p>
           </div>
         </Switch>
 

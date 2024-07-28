@@ -24,6 +24,7 @@ const settings = new Store<SettingType>({
       isBreakLine: false,
       splitedBy: "🍠",
       bgColor: "#FFFFFF",
+      isFurigana: false,
     },
   },
   watch: true,
