@@ -62,7 +62,7 @@ const readExcelFile = async (dataSet: DataSetType, fields: string[]) => {
   const file = await workbook.xlsx.load(buffer as Buffer);
 
   const worksheet = file.getWorksheet(dataSet.sheetNumber);
-  const rows = worksheet.getRows(dataSet.rowFrom, dataSet.rowTo);
+  const rows = worksheet.getRows(dataSet.rowFrom, dataSet.rowTo - dataSet.rowFrom + 1);
 
   const data = [];
 
