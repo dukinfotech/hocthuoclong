@@ -15,8 +15,21 @@ import useDataBase from "../../hooks/useDatabase";
 export type DataSetType = {
   name: string;
   file: File;
-  column: number;
-  row: number;
+  rowFrom: number;
+  rowTo: number;
+  columnFrom: number;
+  columnTo: number;
+  sheetNumber: number;
+};
+
+const defaultDataSet: DataSetType = {
+  name: "",
+  file: null,
+  rowFrom: 1,
+  rowTo: 1,
+  columnFrom: 1,
+  columnTo: 1,
+  sheetNumber: 1,
 };
 
 interface CreateDBModalProps {
@@ -26,12 +39,7 @@ interface CreateDBModalProps {
 export default function CreateDBModal({ onClose }: CreateDBModalProps) {
   const { listDB } = useDataBase();
   const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
-  const [dataSet, setDataSet] = useState<DataSetType>({
-    name: "",
-    file: null,
-    column: 1,
-    row: 1,
-  });
+  const [dataSet, setDataSet] = useState<DataSetType>(defaultDataSet);
 
   const isNameExist = useMemo(() => {
     const matchedIndex = databases.findIndex((db) => db.name === dataSet.name);
@@ -43,8 +51,13 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
       dataSet.name &&
       !isNameExist &&
       dataSet.file &&
-      dataSet.column >= 1 &&
-      dataSet.row >= 1
+      dataSet.columnFrom >= 1 &&
+      dataSet.columnTo >= 1 &&
+      dataSet.columnTo >= dataSet.columnFrom &&
+      dataSet.rowFrom >= 1 &&
+      dataSet.rowTo >= 1 &&
+      dataSet.rowTo >= dataSet.rowFrom &&
+      dataSet.sheetNumber >= 1
     );
   }, [dataSet]);
 
@@ -66,8 +79,8 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
 
   const handleSubmit = async () => {
     await loadDataToDB(dataSet);
+    updateListDB();
     toast.success("Tạo dữ liệu thành công");
-    onClose();
   };
 
   return (
@@ -101,27 +114,65 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
             onChange={(e) => handleFileChange(e)}
           />
 
+          <Input
+            isRequired
+            label="Sheet"
+            type="number"
+            min={1}
+            value={dataSet.sheetNumber.toString()}
+            onValueChange={(value) =>
+              setDataSet({ ...dataSet, sheetNumber: parseInt(value) })
+            }
+            variant="flat"
+          />
+
           <div className="flex">
             <Input
               isRequired
-              label="Số cột dữ liệu"
+              label="Từ Hàng ..."
               type="number"
               min={1}
-              value={dataSet.column.toString()}
+              value={dataSet.rowFrom.toString()}
               onValueChange={(value) =>
-                setDataSet({ ...dataSet, column: parseInt(value) })
+                setDataSet({ ...dataSet, rowFrom: parseInt(value) })
               }
               variant="flat"
             />
             <Spacer x={2} />
             <Input
               isRequired
-              label="Số hàng dữ liệu"
+              label="Đến Hàng ..."
               type="number"
               min={1}
-              value={dataSet.row.toString()}
+              value={dataSet.rowTo.toString()}
               onValueChange={(value) =>
-                setDataSet({ ...dataSet, row: parseInt(value) })
+                setDataSet({ ...dataSet, rowTo: parseInt(value) })
+              }
+              variant="flat"
+            />
+          </div>
+
+          <div className="flex">
+            <Input
+              isRequired
+              label="Từ Cột ..."
+              type="number"
+              min={1}
+              value={dataSet.columnFrom.toString()}
+              onValueChange={(value) =>
+                setDataSet({ ...dataSet, columnFrom: parseInt(value) })
+              }
+              variant="flat"
+            />
+            <Spacer x={2} />
+            <Input
+              isRequired
+              label="Đến Cột ..."
+              type="number"
+              min={1}
+              value={dataSet.columnTo.toString()}
+              onValueChange={(value) =>
+                setDataSet({ ...dataSet, columnTo: parseInt(value) })
               }
               variant="flat"
             />
@@ -137,7 +188,7 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
             Tạo bộ dữ liệu
           </Button>
           <Button size="sm" color="danger" onPress={onClose}>
-            Hủy
+            Đóng
           </Button>
         </ModalFooter>
       </ModalContent>

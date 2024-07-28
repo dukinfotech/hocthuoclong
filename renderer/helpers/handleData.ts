@@ -8,7 +8,7 @@ const loadDataToDB = (dataSet: DataSetType) => {
 
     // Define field name
     const fields = [REMEMBER_FIELD];
-    for (let i = 1; i <= dataSet.column; i++) {
+    for (let i = dataSet.columnFrom; i <= dataSet.columnTo; i++) {
       const field = `field${i}`;
       fields.push(field);
     }
@@ -58,8 +58,8 @@ const readExcelFile = async (dataSet: DataSetType, fields: string[]) => {
 
   const file = await workbook.xlsx.load(buffer as Buffer);
 
-  const worksheet = file.getWorksheet(1);
-  const rows = worksheet.getRows(1, dataSet.row);
+  const worksheet = file.getWorksheet(dataSet.sheetNumber);
+  const rows = worksheet.getRows(dataSet.rowFrom, dataSet.rowTo);
 
   const data = [];
 
@@ -68,17 +68,12 @@ const readExcelFile = async (dataSet: DataSetType, fields: string[]) => {
       // Skip error rows
       let dataObject = {};
       dataObject["id"] = i + 1;
-
-      fields.forEach((field, j) => {
-        if (j === 0) {
-          dataObject[field] = "false"; // Default isRemembered = false
-        } else {
-          dataObject[field] = row.getCell(j).value
-            ? convertCellToHTML(row.getCell(j))
-            : "";
-        }
-      });
-
+      dataObject[REMEMBER_FIELD] = "false";
+      for (let j = dataSet.columnFrom; j <= dataSet.columnTo; j++) {
+        dataObject[`field${j}`] = row.getCell(j).value
+          ? convertCellToHTML(row.getCell(j))
+          : "";
+      }
       data.push(dataObject);
     } catch (error) {
       console.error(error);
