@@ -31,22 +31,25 @@ const loadDataToDB = (dataSet: DataSetType) => {
 
     request.onsuccess = async function (event: any) {
       console.log("onsuccess");
-      // Get data from excel file
-      const data = await readExcelFile(dataSet, fields);
+      try {
+        // Get data from excel file
+        const data = await readExcelFile(dataSet, fields);
 
-      const db: IDBDatabase = (event.target as IDBOpenDBRequest).result;
-      const transaction = db.transaction(DATA_OBJECT_STORE_NAME, "readwrite");
-      const objectStore = transaction.objectStore(DATA_OBJECT_STORE_NAME);
+        const db: IDBDatabase = (event.target as IDBOpenDBRequest).result;
+        const transaction = db.transaction(DATA_OBJECT_STORE_NAME, "readwrite");
+        const objectStore = transaction.objectStore(DATA_OBJECT_STORE_NAME);
 
-      data.forEach((dataObject) => {
-        objectStore.add(dataObject);
-      });
+        data.forEach((dataObject) => {
+          objectStore.add(dataObject);
+        });
 
-      resolve(true);
+        resolve(true);
+      } catch (error) {
+        reject(error);
+      }
     };
 
     request.onerror = function (event: any) {
-      console.log("onerror");
       reject(event.target.error);
     };
   });

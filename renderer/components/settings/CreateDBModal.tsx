@@ -78,9 +78,14 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
   };
 
   const handleSubmit = async () => {
-    await loadDataToDB(dataSet);
-    updateListDB();
-    toast.success("Tạo dữ liệu thành công");
+    try {
+      await loadDataToDB(dataSet);
+      updateListDB();
+      toast.success("Tạo dữ liệu thành công");
+    } catch (error) {
+      toast.error("Có lỗi xảy ra. Vui lòng kiểm tra lại");
+      console.error(error);
+    }
   };
 
   return (
