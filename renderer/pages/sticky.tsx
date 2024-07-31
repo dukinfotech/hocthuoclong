@@ -121,9 +121,10 @@ export default function NextPage() {
     if (_texts.length === 1) {
       div.innerHTML = _texts[0];
     } else if (_texts.length > 1) {
-      _texts.forEach((_text) => {
+      _texts.forEach((_text, i) => {
         const _div = document.createElement("div");
-        _div.innerHTML = _text + "<hr/>";
+        _div.innerHTML =
+          _text + (i < _texts.length - 1 && _text ? "<hr/>" : "");
         div.appendChild(_div);
       });
     }
