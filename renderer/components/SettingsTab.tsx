@@ -169,6 +169,8 @@ export default function SettingsTab() {
             size="sm"
             color="primary"
             label="Bộ dữ liệu"
+            selectedKeys={selectedDBKey}
+            onSelectionChange={(e: any) => setSelectedDBKey(e)}
           >
             {databases.map((database) => (
               <SelectItem
