@@ -3,6 +3,7 @@ import {
   Checkbox,
   Input,
   Spacer,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -29,6 +30,7 @@ export default function DataTable() {
   const { listData, updateData } = useDataBase();
   const [keyword, setKeyword] = useState<string>("");
   const keywordRef = useRef<HTMLInputElement>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const columnNames = useMemo(() => {
     if (data.length > 0) {
@@ -69,9 +71,11 @@ export default function DataTable() {
 
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       const _data = await listData(selectedDB, keyword);
       console.log(_data);
       setData(_data);
+      setIsLoading(false);
     })();
   }, [keyword]);
 
@@ -151,7 +155,11 @@ export default function DataTable() {
             </TableColumn>
           ))}
         </TableHeader>
-        <TableBody emptyContent="Không có dữ liệu">
+        <TableBody
+          emptyContent="Không có dữ liệu"
+          isLoading={isLoading}
+          loadingContent={<Spinner label="Loading..." />}
+        >
           {data.map((dataObject, i) => (
             <TableRow key={i}>
               {columnNames.map((columnName) => (
