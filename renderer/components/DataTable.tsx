@@ -70,14 +70,16 @@ export default function DataTable() {
   }, [data]);
 
   useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      const _data = await listData(selectedDB, keyword);
-      console.log(_data);
-      setData(_data);
-      setIsLoading(false);
-    })();
-  }, [keyword]);
+    if (selectedDB) {
+      (async () => {
+        setIsLoading(true);
+        const _data = await listData(selectedDB, keyword);
+        console.log(_data);
+        setData(_data);
+        setIsLoading(false);
+      })();
+    }
+  }, [keyword, selectedDB]);
 
   // Shown columns
   useEffect(() => {
@@ -178,7 +180,7 @@ export default function DataTable() {
           {data.map((dataObject, i) => (
             <TableRow key={i}>
               {columnNames.map((columnName) => (
-                <TableCell key={columnName.key}>
+                <TableCell key={columnName.key} width={20}>
                   {columnName.key !== "isRemember" ? (
                     <span
                       dangerouslySetInnerHTML={{

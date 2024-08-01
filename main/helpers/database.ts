@@ -34,7 +34,9 @@ const createTable = (name: string, columnNames: Array<string>) => {
     }`;
   });
 
-  createTableSQL += "createdAt TEXT DEFAULT (datetime('now'));";
+  createTableSQL += "createdAt DATE DEFAULT CURRENT_DATE);";
+
+  console.debug(createTableSQL);
 
   db.exec(createTableSQL);
 
@@ -70,6 +72,8 @@ const insertDB = (
         insertBulkSQL += `@${columnName})`;
       }
     });
+
+    console.debug(insertBulkSQL);    
 
     return insertBulkSQL;
   };
@@ -113,6 +117,7 @@ const deleteDB = (name: string) => {
 
 const listData = (name: string, keyword: string) => {
   const db = new Database(getDBFilePath(name), { verbose: console.info });
+  console.debug(getDBFilePath(name));
 
   // Query to get all column names
   const columns = db.prepare(`PRAGMA table_info(${DATA_TABLE});`).all();
@@ -124,7 +129,9 @@ const listData = (name: string, keyword: string) => {
 
   // Construct dynamic SQL query
   const conditions = columnNames.map((col) => `${col} LIKE ?`).join(" OR ");
-  const querySQL = `SELECT * FROM ${DATA_TABLE} WHERE ${conditions}`;
+  const querySQL = conditions ? `SELECT * FROM ${DATA_TABLE} WHERE ${conditions}` : `SELECT * FROM ${DATA_TABLE}`;
+
+  console.debug(querySQL);
 
   // Create parameter array
   const params = columnNames.map(() => `%${keyword}%`);
@@ -147,6 +154,8 @@ const updateData = (name: string, id: number, field: object) => {
 
   // Create the SQL UPDATE statement
   const updateSQL = `UPDATE ${DATA_TABLE} SET ${setClause} WHERE id = ?`;
+
+  console.debug(updateSQL);
 
   // Prepare an update statement
   const update = db.prepare(updateSQL);
