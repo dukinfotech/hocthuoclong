@@ -8,9 +8,10 @@ import {
   Spacer,
 } from "@nextui-org/react";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { loadDataToDB } from "../../helpers/handleData";
+import readDataFromExcel from "../../helpers/readDataFromExcel";
 import { toast } from "react-toastify";
 import useDataBase from "../../hooks/useDatabase";
+import { DBType } from "../SettingsTab";
 
 export type DataSetType = {
   name: string;
@@ -37,12 +38,14 @@ interface CreateDBModalProps {
 }
 
 export default function CreateDBModal({ onClose }: CreateDBModalProps) {
-  const { listDB } = useDataBase();
-  const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
+  const { insertDB, listDB } = useDataBase();
+  const [databases, setDatabases] = useState<DBType[]>([]);
   const [dataSet, setDataSet] = useState<DataSetType>(defaultDataSet);
 
   const isNameExist = useMemo(() => {
-    const matchedIndex = databases.findIndex((db) => db.name === dataSet.name);
+    const matchedIndex = databases.findIndex(
+      (database) => database.name === dataSet.name
+    );
     return matchedIndex >= 0;
   }, [databases, dataSet.name]);
 
@@ -61,13 +64,13 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
     );
   }, [dataSet]);
 
-  const updateListDB = async () => {
-    const _listDB = await listDB();
-    setDatabases(_listDB);
+  const fetchListDB = async () => {
+    const _databases = await listDB(false);
+    setDatabases(_databases);
   };
 
   useEffect(() => {
-    updateListDB();
+    fetchListDB();
   }, []);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -79,11 +82,11 @@ export default function CreateDBModal({ onClose }: CreateDBModalProps) {
 
   const handleSubmit = async () => {
     try {
-      await loadDataToDB(dataSet);
-      updateListDB();
-      toast.success("Tạo dữ liệu thành công");
+      const { columnNames, data } = await readDataFromExcel(dataSet);
+      await insertDB(dataSet.name, columnNames, data);
+      fetchListDB();
     } catch (error) {
-      toast.error("Có lỗi xảy ra. Vui lòng kiểm tra lại");
+      toast.error("Đọc file Excel thất bại. Vui lòng kiểm tra lại");
       console.error(error);
     }
   };

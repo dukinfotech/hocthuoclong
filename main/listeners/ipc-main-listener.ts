@@ -4,6 +4,13 @@ import { settings } from "../stores/settings";
 import path from "path";
 import { isProd } from "../background";
 import stickyWindowListener from "./sticky-window-listener";
+import {
+  deleteDB,
+  insertDB,
+  listDB,
+  listData,
+  updateData,
+} from "../helpers/database";
 
 export default function ipcMainListener(
   mainWindow: BrowserWindow,
@@ -75,5 +82,26 @@ export default function ipcMainListener(
     Object.keys(changedSettings).map((key) => {
       settings.set(key, changedSettings[key]);
     });
+  });
+
+  ipcMain.handle("database.insert-data", (event, arg) => {
+    insertDB(arg.name, arg.columnNames, arg.data);
+  });
+
+  ipcMain.handle("database.list", (event, arg) => {
+    return listDB(arg.isWithFileSize);
+  });
+
+  ipcMain.handle("database.delete", (event, arg) => {
+    deleteDB(arg.name);
+  });
+
+  ipcMain.handle("database.list-data", (event, arg) => {
+    const data = listData(arg.name, arg.keyword);
+    return data;
+  });
+
+  ipcMain.handle("database.update-data", (event, arg) => {
+    updateData(arg.name, arg.id, arg.field);
   });
 }

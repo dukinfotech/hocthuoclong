@@ -5,10 +5,3 @@ export const shuffleArray = (array: Array<any>) => {
   }
   return array;
 };
-
-export const textContentFromHTML = (html: string) => {
-  const removedRtTagsHTML = html.replaceAll(/<rt>.*?<\/rt>/g, "");
-  const div = document.createElement("div");
-  div.innerHTML = removedRtTagsHTML.trim();
-  return div.textContent;
-};

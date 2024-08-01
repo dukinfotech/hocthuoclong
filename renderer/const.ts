@@ -1,7 +1,5 @@
 export const APP_NAME = "Học Thuộc Lòng";
 
-export const DATA_OBJECT_STORE_NAME = "data";
-export const REMEMBER_FIELD = "isRemembered";
 export const SHOWN_COLUMNS = "shown_columns";
 
 export const WINDOW_DEFAULT_WIDTH = 800;

@@ -23,8 +23,13 @@ import {
 import { RiFontSize2 } from "react-icons/ri";
 import BgColorPicker from "./settings/BgColorPicker";
 
+export type DBType = {
+  name: string;
+  size: string;
+};
+
 export default function SettingsTab() {
-  const [databases, setDatabases] = useState<IDBDatabaseInfo[]>([]);
+  const [databases, setDatabases] = useState<DBType[]>([]);
   const {
     selectedDB,
     stickyWindow,
@@ -45,13 +50,13 @@ export default function SettingsTab() {
   const { isShowSticky, toggleShowSticky } = useGlobalStore();
   const { show } = useConfirmPrompt();
 
-  const updateListDB = async () => {
-    const _listDB = await listDB();
-    setDatabases(_listDB);
+  const fetchListDB = async () => {
+    const _databases = await listDB(true);
+    setDatabases(_databases);
   };
 
   useEffect(() => {
-    updateListDB();
+    fetchListDB();
   }, []);
 
   useEffect(() => {
@@ -128,11 +133,10 @@ export default function SettingsTab() {
   const handleDeleteDB = async (dbName: string) => {
     const isConfirmed = await show(`Xoá bộ dữ liệu: ${dbName}?`);
     if (isConfirmed) {
-      deleteDB(dbName);
+      await deleteDB(dbName);
       setSelectedDBKey(new Set([]));
       reloadSticky();
-      updateListDB();
-      toast.success(`Đã xoá bộ dữ liệu: ${dbName}`);
+      fetchListDB();
     }
   };
 
@@ -167,27 +171,30 @@ export default function SettingsTab() {
             selectedKeys={selectedDBKey}
             onSelectionChange={(e: any) => setSelectedDBKey(e)}
           >
-            {databases.map((db, i) => (
+            {databases.map((database, i) => (
               <SelectItem
-                key={db.name}
-                value={db.name}
+                key={database.name}
+                value={database.name}
                 endContent={
                   <Button
                     isIconOnly
                     size="sm"
                     color="danger"
-                    onPress={() => handleDeleteDB(db.name)}
+                    onPress={() => handleDeleteDB(database.name)}
                   >
                     <BsTrash3 />
                   </Button>
                 }
               >
-                {db.name}
+                <div className="flex justify-between">
+                  <div>{database.name}</div>
+                  <div>{database.size}</div>
+                </div>
               </SelectItem>
             ))}
           </Select>
           <Spacer x={1} />
-          <CreateDBButton onClose={updateListDB} />
+          <CreateDBButton onClose={fetchListDB} />
         </div>
 
         <Spacer y={2} />
