@@ -69,7 +69,19 @@ const useDataBase = () => {
     }
   };
 
-  return { listDB, insertDB, deleteDB, listData, updateData };
+  const selectData = async (dbName: string) => {
+    try {
+      const data = await window.ipc.invoke("database.select-data", {
+        name: dbName,
+      });
+      return data;
+    } catch (error) {
+      toast.error("Cập nhật dữ liệu thất bại");
+      console.error(error);
+    }
+  };
+
+  return { listDB, insertDB, deleteDB, listData, updateData, selectData };
 };
 
 export default useDataBase;

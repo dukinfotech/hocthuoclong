@@ -1,24 +1,25 @@
 import { RiDraggable } from "react-icons/ri";
 import React, { useEffect, useRef, useState } from "react";
 import { useSettingStore } from "../stores/setting-store";
-import useData from "../hooks/useData";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
-import {
-  REMEMBER_FIELD,
-  SHOWN_COLUMNS,
-  STICKY_WINDOW_DEFAULT_FONTSIZE,
-} from "../const";
+import { SHOWN_COLUMNS, STICKY_WINDOW_DEFAULT_FONTSIZE } from "../const";
+import useDataBase from "../hooks/useDatabase";
 
 export default function NextPage() {
   const [shownColumns, setShownColumns] = useState<number[]>();
   const { selectedDB, stickyWindow, loadSettings } = useSettingStore();
+  const [data, setData] = useState<Array<any>>([]);
+  const { selectData } = useDataBase();
 
-  // Fetch data from database
-  const { data } = useData(selectedDB);
-  let prettyData = data.filter(
-    (dataObject) => dataObject[REMEMBER_FIELD] === "false"
-  );
+  useEffect(() => {
+    if (selectedDB) {
+      (async () => {
+        const _data = await selectData(selectedDB);
+        setData(_data);
+      })();
+    }
+  }, [selectedDB]);
 
   // Furigana
   const kuroshiro = new Kuroshiro();
@@ -37,13 +38,14 @@ export default function NextPage() {
 
   // Convert to furigana
   useEffect(() => {
-    if (prettyData.length > 0) {
-      const selectedDataObject = prettyData[counter];
+    if (data.length > 0) {
+      const row = data[counter];
 
-      if (selectedDataObject) {
-        let arrayValues = Object.values(selectedDataObject);
-        const id = arrayValues[0];
-
+      
+      if (row) {
+        let arrayValues = Object.values(row);
+        const id = arrayValues[0] as number;
+        
         if (shownColumns) {
           arrayValues = arrayValues.filter((arrayValue, i) => {
             return shownColumns.includes(i - 1);
@@ -55,7 +57,7 @@ export default function NextPage() {
         });
       }
     }
-  }, [counter, prettyData.length]);
+  }, [counter, data.length]);
 
   // Load settings
   useEffect(() => {
@@ -68,17 +70,17 @@ export default function NextPage() {
 
   // Run interval
   useEffect(() => {
-    if (prettyData.length > 0) {
+    if (data.length > 0) {
       startInterval();
       return () => pauseInterval(); // Cleanup interval on component unmount
     }
-  }, [prettyData.length]);
+  }, [data.length]);
 
   useEffect(() => {
     document.getElementById("__next");
   }, []);
 
-  const concatValuesToString = (id: string, values: string[]) => {
+  const concatValuesToString = (id: number, values: any[]) => {
     return new Promise<string[]>(async (resolve, reject) => {
       let _texts = [];
 
@@ -156,11 +158,11 @@ export default function NextPage() {
     console.log("startInterval");
     interval.current = setInterval(() => {
       if (stickyWindow.isRandom) {
-        const _randomCounter = randomCounter(prettyData.length);
+        const _randomCounter = randomCounter(data.length);
         setCounter(_randomCounter);
       } else {
         setCounter((prevCounter) =>
-          prevCounter >= prettyData.length - 1 ? 0 : prevCounter + 1
+          prevCounter >= data.length - 1 ? 0 : prevCounter + 1
         );
       }
     }, stickyWindow.interval);

@@ -118,17 +118,16 @@ const listData = (name: string, keyword: string) => {
   const columns = db.prepare(`PRAGMA table_info(${DATA_TABLE});`).all();
 
   // Extract column names
-  const columnNames = columns.map((col: any) => col.name);
-
-  // Exclude Id, isRemember, created_at
-  const selectedColumns = columnNames.slice(2, -1);
+  const columnNames = columns
+    .filter((col, i) => i > 1 && i !== columns.length - 1)
+    .map((col: any, i) => col.name);
 
   // Construct dynamic SQL query
-  const conditions = selectedColumns.map((col) => `${col} LIKE ?`).join(" OR ");
+  const conditions = columnNames.map((col) => `${col} LIKE ?`).join(" OR ");
   const querySQL = `SELECT * FROM ${DATA_TABLE} WHERE ${conditions}`;
 
   // Create parameter array
-  const params = selectedColumns.map(() => `%${keyword}%`);
+  const params = columnNames.map(() => `%${keyword}%`);
 
   // Execute the query
   const rows = db.prepare(querySQL).all(...params);
@@ -160,4 +159,31 @@ const updateData = (name: string, id: number, field: object) => {
   db.close();
 };
 
-export { listDB, insertDB, deleteDB, listData, updateData };
+const selectData = (name: string) => {
+  const db = new Database(getDBFilePath(name), { verbose: console.info });
+
+  // Query to get all column names
+  const columns = db.prepare(`PRAGMA table_info(${DATA_TABLE});`).all();
+
+  // Extract column names
+  const columnNames = columns
+    .filter((col, i) => i !== 1 && i !== columns.length - 1)
+    .map((col: any, i) => col.name);
+
+  // Create the SQL UPDATE statement
+  const selectSQL = `SELECT ${columnNames.join(
+    ","
+  )} FROM ${DATA_TABLE} WHERE isRemember = 0`;
+
+  // Prepare the query
+  const stmt = db.prepare(selectSQL);
+
+  // Execute the query and fetch all rows
+  const rows = stmt.all();
+
+  db.close();
+
+  return rows;
+};
+
+export { listDB, insertDB, deleteDB, listData, updateData, selectData };

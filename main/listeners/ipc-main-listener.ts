@@ -10,6 +10,7 @@ import {
   listDB,
   listData,
   updateData,
+  selectData,
 } from "../helpers/database";
 
 export default function ipcMainListener(
@@ -103,5 +104,10 @@ export default function ipcMainListener(
 
   ipcMain.handle("database.update-data", (event, arg) => {
     updateData(arg.name, arg.id, arg.field);
+  });
+
+  ipcMain.handle("database.select-data", (event, arg) => {
+    const data = selectData(arg.name);
+    return data;
   });
 }
