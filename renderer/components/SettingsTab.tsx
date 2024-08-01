@@ -60,6 +60,7 @@ export default function SettingsTab() {
   }, []);
 
   useEffect(() => {
+    console.log(selectedDBKey);
     const value = selectedDBKey.values();
     const dbName = value.next().value as string;
 
@@ -168,13 +169,11 @@ export default function SettingsTab() {
             size="sm"
             color="primary"
             label="Bộ dữ liệu"
-            selectedKeys={selectedDBKey}
-            onSelectionChange={(e: any) => setSelectedDBKey(e)}
           >
-            {databases.map((database, i) => (
+            {databases.map((database) => (
               <SelectItem
                 key={database.name}
-                value={database.name}
+                textValue={`${database.name} (${database.size})`}
                 endContent={
                   <Button
                     isIconOnly
