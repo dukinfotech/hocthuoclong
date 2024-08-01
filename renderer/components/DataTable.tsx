@@ -79,6 +79,21 @@ export default function DataTable() {
     })();
   }, [keyword]);
 
+  // Shown columns
+  useEffect(() => {
+    let shownColumns: number[] = [];
+    if (data.length > 0) {
+      const firstDataObject = data[0];
+      Object.keys(firstDataObject).forEach((key, i) => {
+        // Skip id, isRemember, createdAt
+        if (i > 1 && i !== Object.keys(firstDataObject).length - 1) {
+          shownColumns.push(i - 1);
+        }
+      });
+    }
+    localStorage.setItem(SHOWN_COLUMNS, JSON.stringify(shownColumns));
+  }, [data]);
+
   const toggleRemember = (id: number, e: any) => {
     const isRemember = e.target.checked ? 1 : 0;
     updateData(selectedDB, id, { isRemember });
